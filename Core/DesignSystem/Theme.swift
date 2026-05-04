@@ -35,6 +35,30 @@ extension Color {
     static let info    = Color("info")
 }
 
+// MARK: - ShapeStyle bridge
+//
+// Permite escribir `.foregroundStyle(.brand)` en lugar de
+// `.foregroundStyle(Color.brand)`. Sin esto el compilador busca
+// `.brand` en `ShapeStyle` y no lo encuentra.
+
+extension ShapeStyle where Self == Color {
+    static var brand: Color            { .brand }
+    static var brandSoft: Color        { .brandSoft }
+    static var success: Color          { .success }
+    static var warning: Color          { .warning }
+    static var danger: Color           { .danger }
+    static var info: Color             { .info }
+    static var wasteOrganic: Color     { .wasteOrganic }
+    static var wastePET: Color         { .wastePET }
+    static var wasteGlass: Color       { .wasteGlass }
+    static var wastePaper: Color       { .wastePaper }
+    static var wasteMetal: Color       { .wasteMetal }
+    static var wasteElectronic: Color  { .wasteElectronic }
+    static var textPrimary: Color      { .textPrimary }
+    static var textSecondary: Color    { .textSecondary }
+    static var textTertiary: Color     { .textTertiary }
+}
+
 // MARK: - Spacing tokens (escala 4-pt)
 
 enum Spacing {

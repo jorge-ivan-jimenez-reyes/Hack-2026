@@ -21,7 +21,7 @@ struct VisionWasteClassifier: WasteClassifier {
         request.imageCropAndScaleOption = .centerCrop
 
         let handler = VNImageRequestHandler(cgImage: cgImage, orientation: .up)
-        try await Task.detached { try handler.perform([request]) }.value
+        try handler.perform([request])
 
         guard let results = request.results as? [VNClassificationObservation],
               let top = results.first else {
