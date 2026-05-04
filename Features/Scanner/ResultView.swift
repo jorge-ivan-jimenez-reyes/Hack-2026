@@ -9,22 +9,41 @@ struct ResultView: View {
 
     @Environment(\.modelContext) private var context
 
+    @State private var revealed = false
+    @State private var confettiTrigger = 0
+    @State private var animatedConfidence: Double = 0
+
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: Spacing.l) {
-                imagePreview
-                categoryHeader
-                explanationCard
-                if let tip = response.tip { tipCard(tip) }
-                if !classification.alternatives.isEmpty {
-                    alternativesCard
+        ZStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: Spacing.l) {
+                    imagePreview
+                    categoryHeader
+                    explanationCard
+                    if let tip = response.tip { tipCard(tip) }
+                    if !classification.alternatives.isEmpty {
+                        alternativesCard
+                    }
+                    actionsRow
                 }
-                actionsRow
+                .padding(Spacing.l)
             }
-            .padding(Spacing.l)
+
+            // Confeti overlay — solo se activa al guardar
+            ConfettiView(trigger: confettiTrigger)
+                .ignoresSafeArea()
         }
         .background(Color.surface)
         .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            Haptics.success()
+            withAnimation(AppAnimation.bouncy) {
+                revealed = true
+            }
+            withAnimation(.easeOut(duration: 0.9).delay(0.2)) {
+                animatedConfidence = classification.confidence
+            }
+        }
     }
 
     private var imagePreview: some View {
@@ -35,6 +54,8 @@ struct ResultView: View {
             .frame(maxWidth: .infinity)
             .background(Color.surfaceMuted)
             .clipShape(RoundedRectangle(cornerRadius: Radius.l))
+            .opacity(revealed ? 1 : 0)
+            .scaleEffect(revealed ? 1 : 0.94)
             .accessibilityLabel("Foto del residuo capturado")
     }
 
@@ -43,11 +64,16 @@ struct ResultView: View {
             ZStack {
                 Circle()
                     .fill(classification.category.color.opacity(0.2))
+                Circle()
+                    .trim(from: 0, to: animatedConfidence)
+                    .stroke(classification.category.color, style: .init(lineWidth: 4, lineCap: .round))
+                    .rotationEffect(.degrees(-90))
                 Image(systemName: classification.category.symbolName)
                     .font(.title)
                     .foregroundStyle(classification.category.color)
+                    .symbolEffect(.bounce, value: revealed)
             }
-            .frame(width: 64, height: 64)
+            .frame(width: 72, height: 72)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(classification.category.displayName)
@@ -55,10 +81,15 @@ struct ResultView: View {
                 Text("Bote \(classification.category.binColor) · \(classification.confidencePercentage)% confianza")
                     .font(.appCallout)
                     .foregroundStyle(.secondary)
+                    .contentTransition(.numericText())
             }
             Spacer()
         }
-        .accessibleCard(label: "\(classification.category.displayName), bote \(classification.category.binColor), \(classification.confidencePercentage) por ciento de confianza")
+        .opacity(revealed ? 1 : 0)
+        .offset(y: revealed ? 0 : 12)
+        .accessibleCard(
+            label: "\(classification.category.displayName), bote \(classification.category.binColor), \(classification.confidencePercentage) por ciento de confianza"
+        )
     }
 
     private var explanationCard: some View {
@@ -77,6 +108,9 @@ struct ResultView: View {
                 }
             }
         }
+        .opacity(revealed ? 1 : 0)
+        .offset(y: revealed ? 0 : 16)
+        .animation(AppAnimation.entrance.delay(0.15), value: revealed)
     }
 
     private func tipCard(_ tip: String) -> some View {
@@ -85,10 +119,14 @@ struct ResultView: View {
         } icon: {
             Image(systemName: "lightbulb.fill")
                 .foregroundStyle(.warning)
+                .symbolEffect(.pulse, options: .repeat(.continuous))
         }
         .padding(Spacing.l)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.warning.opacity(0.12), in: .rect(cornerRadius: Radius.l))
+        .opacity(revealed ? 1 : 0)
+        .offset(y: revealed ? 0 : 16)
+        .animation(AppAnimation.entrance.delay(0.25), value: revealed)
     }
 
     private var alternativesCard: some View {
@@ -105,16 +143,29 @@ struct ResultView: View {
                 }
             }
         }
+        .opacity(revealed ? 1 : 0)
+        .offset(y: revealed ? 0 : 16)
+        .animation(AppAnimation.entrance.delay(0.35), value: revealed)
     }
 
     private var actionsRow: some View {
         HStack(spacing: Spacing.m) {
-            SecondaryButton(title: "Descartar", action: onDone)
-            PrimaryButton("Guardar", systemImage: "tray.and.arrow.down.fill") {
-                save()
+            SecondaryButton(title: "Descartar") {
+                Haptics.tap()
                 onDone()
             }
+            PrimaryButton("Guardar", systemImage: "tray.and.arrow.down.fill") {
+                save()
+                Haptics.success()
+                confettiTrigger += 1
+                Task {
+                    try? await Task.sleep(for: .milliseconds(900))
+                    onDone()
+                }
+            }
         }
+        .opacity(revealed ? 1 : 0)
+        .animation(AppAnimation.entrance.delay(0.45), value: revealed)
     }
 
     private func save() {

@@ -8,6 +8,7 @@ struct CoachView: View {
             VStack(spacing: 0) {
                 if let note = state.availabilityNote {
                     availabilityBanner(note)
+                        .transition(.move(edge: .top).combined(with: .opacity))
                 }
                 conversation
                 inputBar
@@ -25,17 +26,38 @@ struct CoachView: View {
     }
 
     private var conversation: some View {
-        ScrollView {
-            LazyVStack(alignment: .leading, spacing: Spacing.m) {
-                if state.messages.isEmpty { greeter }
-                ForEach(state.messages) { msg in
-                    bubble(msg)
+        ScrollViewReader { proxy in
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: Spacing.m) {
+                    if state.messages.isEmpty { greeter }
+                    ForEach(state.messages) { msg in
+                        bubble(msg)
+                            .id(msg.id)
+                            .transition(.asymmetric(
+                                insertion: .move(edge: msg.role == .user ? .trailing : .leading)
+                                    .combined(with: .opacity)
+                                    .combined(with: .scale(scale: 0.92)),
+                                removal: .opacity
+                            ))
+                    }
+                    if state.isThinking {
+                        thinkingIndicator
+                            .transition(.opacity.combined(with: .scale(scale: 0.9)))
+                    }
                 }
-                if state.isThinking { thinkingIndicator }
+                .padding(Spacing.l)
+                .animation(AppAnimation.spring, value: state.messages.count)
+                .animation(AppAnimation.smooth, value: state.isThinking)
             }
-            .padding(Spacing.l)
+            .background(Color.surface)
+            .onChange(of: state.messages.count) { _, _ in
+                if let last = state.messages.last {
+                    withAnimation(AppAnimation.smooth) {
+                        proxy.scrollTo(last.id, anchor: .bottom)
+                    }
+                }
+            }
         }
-        .background(Color.surface)
     }
 
     private var greeter: some View {
@@ -43,6 +65,7 @@ struct CoachView: View {
             Image(systemName: "sparkles")
                 .font(.largeTitle)
                 .foregroundStyle(.brand)
+                .symbolEffect(.variableColor.iterative, options: .repeat(.continuous))
             Text("Pregúntame")
                 .font(.appTitle)
             Text("Cómo separar residuos, qué hacer con un objeto específico, o tips para reducir tu basura.")
@@ -83,7 +106,9 @@ struct CoachView: View {
 
     private var thinkingIndicator: some View {
         HStack(spacing: Spacing.s) {
-            ProgressView().controlSize(.small)
+            Image(systemName: "ellipsis")
+                .symbolEffect(.variableColor.iterative, options: .repeat(.continuous))
+                .foregroundStyle(.brand)
             Text("Pensando…")
                 .font(.appCaption)
                 .foregroundStyle(.secondary)
@@ -96,11 +121,13 @@ struct CoachView: View {
                 .textFieldStyle(.roundedBorder)
                 .lineLimit(1...4)
             Button {
+                Haptics.tap()
                 Task { await state.send() }
             } label: {
                 Image(systemName: "arrow.up.circle.fill")
                     .font(.title)
                     .foregroundStyle(.brand)
+                    .symbolEffect(.bounce, value: state.messages.count)
             }
             .disabled(state.input.trimmingCharacters(in: .whitespaces).isEmpty || state.isThinking)
             .minTouchTarget()

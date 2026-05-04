@@ -5,6 +5,8 @@ struct HistoryView: View {
     @Query(sort: \ScanRecord.createdAt, order: .reverse) private var records: [ScanRecord]
     @Environment(\.modelContext) private var context
 
+    @State private var bouncePulse = 0
+
     var body: some View {
         NavigationStack {
             Group {
@@ -15,24 +17,48 @@ struct HistoryView: View {
                 }
             }
             .navigationTitle("Historial")
+            .animation(AppAnimation.smooth, value: records.count)
         }
     }
 
     private var emptyState: some View {
-        ContentUnavailableView(
-            "Sin escaneos aún",
-            systemImage: "tray",
-            description: Text("Tus escaneos aparecerán aquí.")
-        )
+        VStack(spacing: Spacing.l) {
+            Image(systemName: "tray")
+                .font(.system(size: 64))
+                .foregroundStyle(.tertiary)
+                .symbolEffect(.bounce, value: bouncePulse)
+                .onAppear {
+                    Task {
+                        while !Task.isCancelled {
+                            try? await Task.sleep(for: .seconds(2.5))
+                            bouncePulse += 1
+                        }
+                    }
+                }
+            Text("Sin escaneos aún")
+                .font(.appTitle2)
+            Text("Tus escaneos aparecerán aquí.")
+                .font(.appBody)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+        }
+        .padding()
     }
 
     private var list: some View {
         List {
             ForEach(records) { record in
                 row(record)
+                    .transition(.asymmetric(
+                        insertion: .opacity.combined(with: .move(edge: .top)),
+                        removal: .opacity.combined(with: .move(edge: .leading))
+                    ))
             }
             .onDelete { indices in
-                indices.map { records[$0] }.forEach(context.delete)
+                Haptics.warning()
+                withAnimation(AppAnimation.spring) {
+                    indices.map { records[$0] }.forEach(context.delete)
+                }
             }
         }
         .listStyle(.insetGrouped)
