@@ -14,10 +14,9 @@ struct OnboardingView: View {
             VStack(spacing: Spacing.xl) {
                 Spacer()
 
-                Image(systemName: "leaf.circle.fill")
-                    .font(.system(size: 96))
+                LottiePlayer(name: "onboarding-leaf", fallbackSymbol: "leaf.circle.fill")
                     .foregroundStyle(.brand)
-                    .symbolEffect(.pulse, options: .repeat(.continuous))
+                    .frame(width: 160, height: 160)
                     .accessibilityHidden(true)
                     .scaleEffect(appeared ? 1 : 0.6)
                     .opacity(appeared ? 1 : 0)
