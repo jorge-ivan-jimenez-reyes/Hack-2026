@@ -5,10 +5,10 @@ Categoría: **Human-Centered AI**. Eje: **Residuos**.
 Universidad Panamericana · iOS Lab.
 
 ## Equipo
-- Dev 1 — _por definir_
-- Dev 2 — _por definir_
-- Diseño — _por definir_
-- Lab Manager / Profesor — _por definir_
+- Jorge — Tech Lead / Dev
+- Esteban Mayoral — Dev
+- Montserrat Navarro — Diseño
+- Iñaki — Lab Manager
 
 ## Reto específico
 _Pendiente — se anuncia al inicio del evento._
