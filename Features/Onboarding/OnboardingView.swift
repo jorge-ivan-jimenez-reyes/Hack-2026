@@ -44,13 +44,17 @@ struct OnboardingView: View {
             ZStack {
                 heroForCurrentPage
                     .frame(width: 340, height: 340)
-                    .id(activeHeroId)              // forces transition al cambiar
-                    .transition(heroTransition)    // morph blur + fade
+                    .id(activeHeroId)
+                    .transition(.heroMorph)      // custom Transition: scale + opacity + blur
 
                 storyOverlay
                     .frame(width: 340, height: 340)
+
+                // Burst de sparkles al cambiar de página — impacto extra
+                PageChangeBurst(trigger: index, color: currentAccent)
+                    .frame(width: 340, height: 340)
             }
-            .animation(.smooth(duration: 0.55, extraBounce: 0.05), value: index)
+            .animation(.smooth(duration: 0.6, extraBounce: 0.08), value: index)
 
             Spacer(minLength: 0)
         }
@@ -81,14 +85,6 @@ struct OnboardingView: View {
         return "procedural"
     }
 
-    /// Morph transition entre heros: scale + opacity, sin slide (el TabView
-    /// ya hace slide del texto). Da sensación de "uno se desvanece, otro emerge".
-    private var heroTransition: AnyTransition {
-        .asymmetric(
-            insertion: .scale(scale: 0.85).combined(with: .opacity),
-            removal: .scale(scale: 1.05).combined(with: .opacity)
-        )
-    }
 
     /// Overlay storytelling de la página activa — switch por index.
     @ViewBuilder

@@ -24,6 +24,7 @@
 		1DBDBCCF5DBBEA0D9992AD41 /* GlassStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BABD227FE13982AF592E383 /* GlassStyle.swift */; };
 		1DF24EB422E766972CDD93E8 /* CategoryCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BEDA8E2A04F5F1BB4215A7E /* CategoryCard.swift */; };
 		1EABB35C67831FC3BAFB74D9 /* CenterLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = C438F57E4F1FEA6FCC3714F5 /* CenterLocation.swift */; };
+		1F0A23D236209F7338A4C917 /* HeroMorphTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4563468D72B00D5F2F4EB40 /* HeroMorphTransition.swift */; };
 		1F0BD6D75D2059A46060B4C0 /* FoundationModelsCoach.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E7A8088B2994D1C4FADFAA0 /* FoundationModelsCoach.swift */; };
 		1FC5603E84EB79316BAA4887 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2C3E152A2FE2C6C800E3EBF /* HomeView.swift */; };
 		26EF5BC1A91D04DBF1EC3C9D /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00A4C9369850152402EA4588 /* OnboardingView.swift */; };
@@ -151,6 +152,7 @@
 		BE41A5F3657705294D698CD1 /* RecolectoresListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecolectoresListView.swift; sourceTree = "<group>"; };
 		BF5816E9A1C88B9C4EB49457 /* Reminder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reminder.swift; sourceTree = "<group>"; };
 		C438F57E4F1FEA6FCC3714F5 /* CenterLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CenterLocation.swift; sourceTree = "<group>"; };
+		C4563468D72B00D5F2F4EB40 /* HeroMorphTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeroMorphTransition.swift; sourceTree = "<group>"; };
 		C45CD986FF2AE088D599F442 /* PageIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageIndicator.swift; sourceTree = "<group>"; };
 		C670B076780D26BE7E49F84B /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		C9355253958F455AEC1AA8D6 /* RecolectorState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecolectorState.swift; sourceTree = "<group>"; };
@@ -278,6 +280,7 @@
 				74BA98292636ED074C8AAE4D /* BucketPickupOverlay.swift */,
 				13A2A842BD2EFB9DEE9A1832 /* BucketTransformOverlay.swift */,
 				27268D5B59BBCD9FE02C370F /* FloatingParticles.swift */,
+				C4563468D72B00D5F2F4EB40 /* HeroMorphTransition.swift */,
 				AFEBD0BB10021B69C1F7E9B6 /* HeroSymbol.swift */,
 			);
 			path = Components;
@@ -677,6 +680,7 @@
 				A058A9BC52CEA59EC9BFE88A /* HackNacional2026App.swift in Sources */,
 				0C72465D6E40886532AB1615 /* Haptics.swift in Sources */,
 				0DEA8C0E31B6F77833BC0EF9 /* HeroCubetaCard.swift in Sources */,
+				1F0A23D236209F7338A4C917 /* HeroMorphTransition.swift in Sources */,
 				F7DA9E6F50F1447830F08E98 /* HeroSymbol.swift in Sources */,
 				421CC5765D412011FB6BA938 /* HistoryView.swift in Sources */,
 				D3C2845D7EC9736C91DEC4EE /* HomeHeader.swift in Sources */,
