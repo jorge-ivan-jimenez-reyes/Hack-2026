@@ -65,38 +65,37 @@ struct PageChangeBurst: View {
     }
 
     private func fireBurst() {
-        sparkles = (0..<10).map { i in
+        // Solo 5 sparkles, más sutiles, no compiten con el LightSweep
+        sparkles = (0..<5).map { i in
             BurstSparkle(
                 id: burstId * 100 + i,
-                size: CGFloat.random(in: 14...22),
+                size: CGFloat.random(in: 10...16),
                 dx: 0, dy: 0,
-                opacity: 1,
-                scale: 0.5,
-                rotation: .random(in: -180...180)
+                opacity: 0.85,
+                scale: 0.4,
+                rotation: .random(in: -90...90)
             )
         }
         burstId += 1
 
-        // Lanzar cada sparkle en una dirección random
         for i in sparkles.indices {
             let angle = Double.random(in: 0...(2 * .pi))
-            let distance = CGFloat.random(in: 80...160)
+            let distance = CGFloat.random(in: 60...120)
             let targetX = cos(angle) * distance
             let targetY = sin(angle) * distance
 
-            withAnimation(.smooth(duration: 0.85, extraBounce: 0.05)) {
+            withAnimation(.smooth(duration: 0.7, extraBounce: 0.05)) {
                 sparkles[i].dx = targetX
                 sparkles[i].dy = targetY
-                sparkles[i].scale = 1.0
-                sparkles[i].rotation += Double.random(in: 180...720)
+                sparkles[i].scale = 0.85
+                sparkles[i].rotation += Double.random(in: 90...360)
             }
-            withAnimation(.easeIn(duration: 0.85)) {
+            withAnimation(.easeIn(duration: 0.7)) {
                 sparkles[i].opacity = 0
             }
         }
 
-        // Limpiar sparkles después de 1s
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.85) {
             sparkles = []
         }
     }

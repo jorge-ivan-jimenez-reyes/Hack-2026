@@ -42,47 +42,34 @@ struct OnboardingView: View {
             Color.clear.frame(height: 100)  // espacio para topBar + offset
 
             ZStack {
+                // Light sweep — onda de luz radial detrás del hero
+                LightSweep(trigger: index, color: currentAccent)
+
+                // Hero PERSISTENTE — no se re-renderiza al cambiar página,
+                // solo pulsa y cambia material. Esto elimina el "snap" jarring.
                 heroForCurrentPage
                     .frame(width: 340, height: 340)
-                    .id(activeHeroId)
-                    .transition(.heroMorph)      // custom Transition: scale + opacity + blur
+                    .heroPulse(trigger: index)
 
                 storyOverlay
                     .frame(width: 340, height: 340)
 
-                // Burst de sparkles al cambiar de página — impacto extra
+                // Sparkles sutiles — solo 5 con timing más suave
                 PageChangeBurst(trigger: index, color: currentAccent)
                     .frame(width: 340, height: 340)
             }
-            .animation(.smooth(duration: 0.6, extraBounce: 0.08), value: index)
+            .animation(.smooth(duration: 0.6, extraBounce: 0.05), value: index)
 
             Spacer(minLength: 0)
         }
     }
 
-    /// Hero por página: si hay Lottie disponible (archivo en bundle), úsalo;
-    /// si no, fallback al `ProceduralBucketHero` (3D nativo).
+    /// Hero compartido. NO se re-instancia al cambiar de página — solo
+    /// cambia el `accent` que internamente actualiza el material.
+    /// Esto da continuidad visual (no hay "snap" entre páginas).
     @ViewBuilder
     private var heroForCurrentPage: some View {
-        let page = pages[index]
-        if let lottieName = page.lottieName,
-           LottiePlayer.exists(lottieName) {
-            LottiePlayer(name: lottieName, fallbackSymbol: page.symbol)
-                .foregroundStyle(currentAccent)
-                .padding(20)
-        } else {
-            ProceduralBucketHero(accent: currentAccent, tilt: dragTilt)
-        }
-    }
-
-    /// Identifier que cambia al pasar de Lottie → procedural o cambiar de archivo.
-    /// Esto fuerza a SwiftUI a aplicar la transición.
-    private var activeHeroId: String {
-        let page = pages[index]
-        if let name = page.lottieName, LottiePlayer.exists(name) {
-            return "lottie-\(name)"
-        }
-        return "procedural"
+        ProceduralBucketHero(accent: currentAccent, tilt: dragTilt)
     }
 
 

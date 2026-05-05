@@ -37,6 +37,7 @@
 		4092A10C0C381EA5096FAE3A /* ScanRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 680C5CDE499B044FCC2D8907 /* ScanRecord.swift */; };
 		4214D006D18738F6F5411874 /* Typography.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5581836293530F268356C372 /* Typography.swift */; };
 		421CC5765D412011FB6BA938 /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3752380463A68E07F338307 /* HistoryView.swift */; };
+		4768FA0857B1B465787C0559 /* LightSweep.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AF06DAF28304F4E8BB3034 /* LightSweep.swift */; };
 		48C0A56673A8E50A7A536BAB /* InfoCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FB1C7BB26E81EA4953EE1E1 /* InfoCard.swift */; };
 		4BF00217C295C5A63FE6F445 /* CentroHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 955E1972FC456559D9C061CF /* CentroHomeView.swift */; };
 		4C72B7D4BD400F14B010D55D /* CoachView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A102F23D916BB30EFAD32881 /* CoachView.swift */; };
@@ -131,6 +132,7 @@
 		805E35C7641160677241DA8E /* Haptics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Haptics.swift; sourceTree = "<group>"; };
 		80F74F5C910CBD9927857F36 /* UserRole.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserRole.swift; sourceTree = "<group>"; };
 		820DB79EF83295A6CABE6EAA /* ResultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultView.swift; sourceTree = "<group>"; };
+		84AF06DAF28304F4E8BB3034 /* LightSweep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightSweep.swift; sourceTree = "<group>"; };
 		872E6F06C4C0633906464B9F /* OnboardingPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPageView.swift; sourceTree = "<group>"; };
 		87E477014B203000A47471FC /* BucketCommunityOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BucketCommunityOverlay.swift; sourceTree = "<group>"; };
 		903E864CEAB049F4D354C848 /* CuadraCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CuadraCard.swift; sourceTree = "<group>"; };
@@ -282,6 +284,7 @@
 				27268D5B59BBCD9FE02C370F /* FloatingParticles.swift */,
 				C4563468D72B00D5F2F4EB40 /* HeroMorphTransition.swift */,
 				AFEBD0BB10021B69C1F7E9B6 /* HeroSymbol.swift */,
+				84AF06DAF28304F4E8BB3034 /* LightSweep.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -688,6 +691,7 @@
 				6822321E1B9CB5A988F421D5 /* ImpactRow.swift in Sources */,
 				48C0A56673A8E50A7A536BAB /* InfoCard.swift in Sources */,
 				294198CBE58B454BB7EC59E3 /* LanguageCoach.swift in Sources */,
+				4768FA0857B1B465787C0559 /* LightSweep.swift in Sources */,
 				9C913EF7FE5F839CEF2EB809 /* LottiePlayer.swift in Sources */,
 				9EE955AC2D35CB74D17E2F3F /* MeshBackground.swift in Sources */,
 				B85F0E60AE7F9665972BF1C6 /* MockLanguageCoach.swift in Sources */,
