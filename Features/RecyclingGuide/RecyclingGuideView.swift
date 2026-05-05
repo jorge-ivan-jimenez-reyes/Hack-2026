@@ -1,8 +1,9 @@
 import SwiftUI
 
 /// Tab de "Guía de reciclaje" — gamificada, interactiva.
-/// Hero: reto del día (5 preguntas swipeables). Después: categorías para
-/// aprender. Score persistente en @AppStorage.
+/// Hero: reto del día (5 preguntas swipeables). Después: las 3 categorías
+/// del sistema municipal (Orgánico / Inorgánico / Sanitario) con zoom morph
+/// al empujar CategoryDetailView.
 struct RecyclingGuideView: View {
     @State private var questions: [QuizQuestion] = QuizQuestion.dailyChallenge()
     @State private var currentIndex = 0
@@ -13,25 +14,33 @@ struct RecyclingGuideView: View {
     @AppStorage("guide.totalCorrect") private var totalCorrect = 0
     @AppStorage("guide.totalAnswered") private var totalAnswered = 0
 
+    @Namespace private var zoomNS
+
     var body: some View {
-        ZStack {
-            Color.cream.ignoresSafeArea()
+        NavigationStack {
+            ZStack {
+                Color.cream.ignoresSafeArea()
 
-            ScrollView {
-                VStack(spacing: Spacing.l) {
-                    header
-                    progressCard
-                    challengeSection
-                    categoriesSection
-                    Color.clear.frame(height: 60)
+                ScrollView {
+                    VStack(spacing: Spacing.l) {
+                        header
+                        progressCard
+                        challengeSection
+                        categoriesSection
+                        Color.clear.frame(height: 60)
+                    }
+                    .padding(.vertical, Spacing.s)
                 }
-                .padding(.vertical, Spacing.s)
-            }
-            .scrollIndicators(.hidden)
+                .scrollIndicators(.hidden)
+                .navigationDestination(for: GuideWasteType.self) { type in
+                    CategoryDetailView(wasteType: type)
+                        .navigationTransition(.zoom(sourceID: type.id, in: zoomNS))
+                }
 
-            // Feedback popup (correct/wrong + explanation)
-            if let feedback = lastFeedback {
-                feedbackOverlay(feedback)
+                // Feedback popup (correcto/incorrecto + explicación)
+                if let feedback = lastFeedback {
+                    feedbackOverlay(feedback)
+                }
             }
         }
         .sheet(isPresented: $showResult) {
@@ -52,14 +61,14 @@ struct RecyclingGuideView: View {
                 Text("Guía de reciclaje")
                     .font(.appTitle2)
                     .foregroundStyle(.inkCharcoal)
-                Text("Aprende qué va a composta y qué no.")
+                Text("Aprende qué va a dónde y cómo separarlo.")
                     .font(.appCallout)
                     .foregroundStyle(.inkCharcoal.opacity(0.65))
             }
             Spacer()
-            Image(systemName: "book.closed.fill")
-                .font(.system(size: 28))
+            LottiePlayer(name: "recycle-loop", fallbackSymbol: "arrow.3.trianglepath")
                 .foregroundStyle(.brand)
+                .frame(width: 36, height: 36)
         }
         .padding(.horizontal, Spacing.l)
         .padding(.top, Spacing.s)
@@ -69,7 +78,7 @@ struct RecyclingGuideView: View {
         let accuracy = totalAnswered > 0 ? Double(totalCorrect) / Double(totalAnswered) : 0
         return VStack(alignment: .leading, spacing: Spacing.m) {
             HStack {
-                Text("Tu progreso")
+                Text("Tu progreso en el quiz")
                     .font(.appHeadline.weight(.semibold))
                     .foregroundStyle(.inkCharcoal)
                 Spacer()
@@ -96,7 +105,7 @@ struct RecyclingGuideView: View {
 
     private func progressMessage(accuracy: Double) -> String {
         if totalAnswered == 0 { return "Empieza el reto del día." }
-        if accuracy > 0.85 { return "Estás dominando. Pro." }
+        if accuracy > 0.85 { return "Estás dominando el reciclaje. Pro." }
         if accuracy > 0.6 { return "Vas bien. Pulamos los detalles." }
         return "Hay material para aprender. Vamos."
     }
@@ -132,7 +141,6 @@ struct RecyclingGuideView: View {
             }
             .animation(.smooth(duration: 0.4), value: currentIndex)
 
-            // Tap fallback for accessibility
             HStack(spacing: Spacing.m) {
                 actionButton(label: "No va", icon: "xmark", color: .danger) {
                     handleSwipe(goesIn: false)
@@ -170,21 +178,18 @@ struct RecyclingGuideView: View {
     private var categoriesSection: some View {
         VStack(alignment: .leading, spacing: Spacing.m) {
             HStack {
-                Image(systemName: "list.bullet.rectangle.fill")
+                Image(systemName: "bag.fill")
                     .foregroundStyle(.brand)
-                Text("Aprende por categoría")
+                Text("Las 3 bolsas del reciclaje")
                     .font(.appHeadline.weight(.semibold))
                     .foregroundStyle(.inkCharcoal)
             }
             .padding(.horizontal, Spacing.l)
 
             VStack(spacing: Spacing.s) {
-                CategoryCard(title: "Orgánico", symbol: "leaf.fill", tint: .brand, itemCount: 18) {}
-                CategoryCard(title: "PET", symbol: "drop.fill", tint: .info, itemCount: 12) {}
-                CategoryCard(title: "Vidrio", symbol: "wineglass.fill", tint: .clay, itemCount: 8) {}
-                CategoryCard(title: "Papel y cartón", symbol: "newspaper.fill", tint: .moss, itemCount: 14) {}
-                CategoryCard(title: "Metal", symbol: "circle.hexagongrid.fill", tint: .warning, itemCount: 9) {}
-                CategoryCard(title: "Electrónico", symbol: "bolt.fill", tint: .danger, itemCount: 11) {}
+                ForEach(GuideWasteType.allCases) { wasteType in
+                    CategoryCard(wasteType: wasteType, namespace: zoomNS)
+                }
             }
             .padding(.horizontal, Spacing.l)
         }
@@ -198,10 +203,13 @@ struct RecyclingGuideView: View {
             Spacer()
             VStack(spacing: Spacing.s) {
                 HStack(spacing: Spacing.s) {
-                    Image(systemName: feedback.correct ? "checkmark.circle.fill" : "xmark.circle.fill")
-                        .font(.title2)
-                        .foregroundStyle(feedback.correct ? .brand : .danger)
-                        .symbolEffect(.bounce)
+                    LottiePlayer(
+                        name: feedback.correct ? "quiz-correct" : "quiz-wrong",
+                        fallbackSymbol: feedback.correct ? "checkmark.circle.fill" : "xmark.circle.fill"
+                    )
+                    .foregroundStyle(feedback.correct ? Color.brand : Color.danger)
+                    .frame(width: 32, height: 32)
+                    .symbolEffect(.bounce)
                     Text(feedback.correct ? "¡Correcto!" : "Casi, pero no")
                         .font(.appHeadline.weight(.bold))
                         .foregroundStyle(.inkCharcoal)
@@ -288,11 +296,13 @@ private struct ResultSheet: View {
 
     var body: some View {
         VStack(spacing: Spacing.l) {
-            Image(systemName: percent >= 80 ? "trophy.fill" : "sparkles")
-                .font(.system(size: 56))
-                .foregroundStyle(percent >= 80 ? .clay : .brand)
-                .symbolEffect(.bounce, options: .repeat(2))
-                .padding(.top, Spacing.l)
+            LottiePlayer(
+                name: "quiz-trophy",
+                fallbackSymbol: percent >= 80 ? "trophy.fill" : "sparkles"
+            )
+            .foregroundStyle(percent >= 80 ? Color.clay : Color.brand)
+            .frame(width: 100, height: 100)
+            .padding(.top, Spacing.l)
 
             Text("\(correct) de \(total)")
                 .font(.system(size: 56, weight: .bold, design: .rounded))
