@@ -5,6 +5,7 @@ import SwiftUI
 struct HeroCubetaCard: View {
     let state: RecolectorState
     let onPrimaryAction: () -> Void
+    var onTapModalityChip: (() -> Void)? = nil
 
     var body: some View {
         ZStack {
@@ -81,7 +82,7 @@ struct HeroCubetaCard: View {
 
     /// Chip que cambia según la modalidad del usuario:
     /// - .pickup → "Pickup mié 6:00am" (tu cubeta llega a domicilio)
-    /// - .dropOff → "Composta Roma Norte abre mañana 8am · 0.4 km"
+    /// - .dropOff → "Composta Roma Norte abre mañana 8am · 0.4 km" (tappable → mapa)
     @ViewBuilder
     private var modalityChip: some View {
         switch state.serviceMode {
@@ -94,10 +95,16 @@ struct HeroCubetaCard: View {
             }
         case .dropOff:
             if let center = state.nearestCenter {
-                chip(
-                    icon: "mappin.circle.fill",
-                    text: "\(center.name) abre \(center.nextOpeningDate.formatted(.relative(presentation: .named))) · \(formattedDistance(center.distanceKm))"
-                )
+                Button {
+                    Haptics.tap()
+                    onTapModalityChip?()
+                } label: {
+                    chip(
+                        icon: "mappin.circle.fill",
+                        text: "\(center.name) · \(formattedDistance(center.distanceKm))"
+                    )
+                }
+                .buttonStyle(.plain)
             }
         }
     }

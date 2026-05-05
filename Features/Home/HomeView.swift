@@ -6,6 +6,7 @@ import SwiftUI
 struct HomeView: View {
     @State private var state: RecolectorState = .mock
     @State private var showScanner = false
+    @State private var showCenterMap = false
 
     /// Modalidad seleccionada en RecolectorSetup (Q5). Controla qué muestra
     /// el Hero card: pickup en casa vs centro más cercano.
@@ -27,10 +28,11 @@ struct HomeView: View {
                         streakDays: state.streakDays
                     )
 
-                    HeroCubetaCard(state: resolvedState) {
-                        // Acción primaria del hero — varía según etapa
-                        handleHeroAction()
-                    }
+                    HeroCubetaCard(
+                        state: resolvedState,
+                        onPrimaryAction: { handleHeroAction() },
+                        onTapModalityChip: { showCenterMap = true }
+                    )
 
                     CubetaTracker(completed: resolvedState.bucketsCompleted)
 
@@ -65,6 +67,9 @@ struct HomeView: View {
         }
         .sheet(isPresented: $showScanner) {
             ScannerView()
+        }
+        .fullScreenCover(isPresented: $showCenterMap) {
+            CenterMapView()
         }
     }
 
