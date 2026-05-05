@@ -485,6 +485,27 @@ enum JourneyBuilders {
         leaf.position = SIMD3<Float>(0, 0.24, 0)
         root.addChild(leaf)
 
+        // Animación: 3 hojas orbitando alrededor de la cubeta
+        let orbit = Entity()
+        orbit.name = "station1-orbit"
+        orbit.position = SIMD3<Float>(0, 0.16, 0)
+        for i in 0..<3 {
+            let angle = Double(i) * 2 * .pi / 3
+            let orbiterLeaf = ModelEntity(
+                mesh: MeshResource.generateSphere(radius: 0.025),
+                materials: [leafMat]
+            )
+            orbiterLeaf.scale = SIMD3<Float>(1.4, 0.5, 1.4)
+            orbiterLeaf.position = SIMD3<Float>(
+                Float(cos(angle)) * 0.20,
+                0,
+                Float(sin(angle)) * 0.20
+            )
+            orbit.addChild(orbiterLeaf)
+        }
+        root.addChild(orbit)
+        startContinuousYRotation(orbit, duration: 5.0)
+
         return root
     }
 
@@ -532,7 +553,7 @@ enum JourneyBuilders {
     static func makeStationHouse(accent: Color) -> Entity {
         let root = Entity()
 
-        // Casa principal grande + buzón + 2 árboles
+        // Casa principal grande + buzón + 2 árboles + cubeta animada al frente
         let house = makeMiniHouse(roofColor: accent, scale: 1.2)
         root.addChild(house)
 
@@ -551,6 +572,35 @@ enum JourneyBuilders {
         )
         mailbox.position = SIMD3<Float>(0.30, 0.14, 0.12)
         root.addChild(mailbox)
+
+        // Cubeta llena en la banqueta — bouncea sugiriendo "lift / pickup"
+        let pickupBucket = Entity()
+        pickupBucket.name = "station2-pickup"
+
+        let bodyMat = pbr(color: accent, roughness: 0.6)
+        let body = ModelEntity(
+            mesh: MeshResource.generateCylinder(height: 0.10, radius: 0.06),
+            materials: [bodyMat]
+        )
+        body.position = SIMD3<Float>(0, 0.05, 0)
+        pickupBucket.addChild(body)
+
+        // Hojas dentro de la cubeta
+        for i in 0..<3 {
+            let leaf = ModelEntity(
+                mesh: MeshResource.generateSphere(radius: 0.025),
+                materials: [pbr(color: .limeSpark, roughness: 0.5)]
+            )
+            leaf.scale = SIMD3<Float>(1.3, 0.5, 1.3)
+            let dx: Float = [-0.025, 0.02, -0.005][i]
+            let dz: Float = [0, -0.02, 0.025][i]
+            leaf.position = SIMD3<Float>(dx, 0.11, dz)
+            pickupBucket.addChild(leaf)
+        }
+
+        pickupBucket.position = SIMD3<Float>(-0.15, 0, 0.30)
+        root.addChild(pickupBucket)
+        startContinuousBounce(pickupBucket, height: 0.06, duration: 1.6)
 
         // 2 árboles flanqueando
         let tree1 = makeTree()
@@ -618,7 +668,9 @@ enum JourneyBuilders {
         )
         topLeaf.scale = SIMD3<Float>(1.2, 0.5, 1.2)
         topLeaf.position = SIMD3<Float>(0, 0.18, 0)
+        topLeaf.name = "station3-pulse"
         root.addChild(topLeaf)
+        startContinuousPulse(topLeaf, scale: 1.20, duration: 1.4)
 
         // 2 pilas adicionales más chicas (windrows) a los lados
         for xSign: Float in [-1, 1] {
@@ -629,6 +681,18 @@ enum JourneyBuilders {
             mini.scale = SIMD3<Float>(1.6, 0.5, 1.0)
             mini.position = SIMD3<Float>(xSign * 0.30, 0.04, -0.20)
             root.addChild(mini)
+        }
+
+        // 3 spheres pequeñas "vapor/steam" que rise+fade arriba de la pila
+        for i in 0..<3 {
+            let steam = ModelEntity(
+                mesh: MeshResource.generateSphere(radius: 0.022),
+                materials: [pbr(color: .cream, roughness: 0.9)]
+            )
+            steam.position = SIMD3<Float>(Float(i - 1) * 0.05, 0.20, 0)
+            steam.name = "station3-steam-\(i)"
+            root.addChild(steam)
+            startContinuousRise(steam, baseY: 0.20, riseHeight: 0.18, duration: 2.5, delay: Double(i) * 0.7)
         }
 
         return root
@@ -648,10 +712,11 @@ enum JourneyBuilders {
             root.addChild(house)
         }
 
-        // Anillo de 6 mini cubetas en frente
+        // Anillo de 6 mini cubetas en frente — pulsan en wave secuencial
         for i in 0..<6 {
             let angle = Double(i) * 2 * .pi / 6
             let mini = Entity()
+            mini.name = "station4-mini-\(i)"
 
             let body = ModelEntity(
                 mesh: MeshResource.generateCylinder(height: 0.10, radius: 0.06),
@@ -673,9 +738,89 @@ enum JourneyBuilders {
                 Float(sin(angle)) * 0.18 + 0.05
             )
             root.addChild(mini)
+
+            // Cada cubeta pulsa con delay i*0.25s — Mexican wave effect
+            startContinuousPulse(mini, scale: 1.18, duration: 1.5, delay: Double(i) * 0.25)
         }
 
         return root
+    }
+
+    // MARK: - Continuous animations
+
+    /// Rotación continua en eje Y, half-turn por iteración para evitar bug de quaternion full-turn.
+    static func startContinuousYRotation(_ entity: Entity, duration: TimeInterval) {
+        let halfTurn = simd_quatf(angle: .pi, axis: SIMD3<Float>(0, 1, 0))
+        let target = Transform(
+            scale: entity.scale,
+            rotation: halfTurn * entity.transform.rotation,
+            translation: entity.position
+        )
+        entity.move(to: target, relativeTo: entity.parent, duration: duration / 2, timingFunction: AnimationTimingFunction.linear)
+        DispatchQueue.main.asyncAfter(deadline: .now() + duration / 2) { [weak entity] in
+            guard let entity else { return }
+            startContinuousYRotation(entity, duration: duration)
+        }
+    }
+
+    /// Bounce vertical infinito (sube y baja).
+    static func startContinuousBounce(_ entity: Entity, height: Float, duration: TimeInterval) {
+        let originalY = entity.position.y
+        let upPosition = SIMD3<Float>(entity.position.x, originalY + height, entity.position.z)
+        let upTarget = Transform(scale: entity.scale, rotation: entity.transform.rotation, translation: upPosition)
+
+        entity.move(to: upTarget, relativeTo: entity.parent, duration: duration / 2, timingFunction: AnimationTimingFunction.easeOut)
+        DispatchQueue.main.asyncAfter(deadline: .now() + duration / 2) { [weak entity] in
+            guard let entity else { return }
+            let downTarget = Transform(
+                scale: entity.scale,
+                rotation: entity.transform.rotation,
+                translation: SIMD3<Float>(entity.position.x, originalY, entity.position.z)
+            )
+            entity.move(to: downTarget, relativeTo: entity.parent, duration: duration / 2, timingFunction: AnimationTimingFunction.easeIn)
+            DispatchQueue.main.asyncAfter(deadline: .now() + duration / 2) {
+                startContinuousBounce(entity, height: height, duration: duration)
+            }
+        }
+    }
+
+    /// Pulse de scale (1.0 → max → 1.0).
+    static func startContinuousPulse(_ entity: Entity, scale targetScale: Float, duration: TimeInterval, delay: TimeInterval = 0) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak entity] in
+            guard let entity else { return }
+            let originalScale = entity.scale
+            let bigScale = originalScale * SIMD3<Float>(repeating: targetScale)
+
+            let upTarget = Transform(scale: bigScale, rotation: entity.transform.rotation, translation: entity.position)
+            entity.move(to: upTarget, relativeTo: entity.parent, duration: duration / 2, timingFunction: AnimationTimingFunction.easeInOut)
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + duration / 2) { [weak entity] in
+                guard let entity else { return }
+                let downTarget = Transform(scale: originalScale, rotation: entity.transform.rotation, translation: entity.position)
+                entity.move(to: downTarget, relativeTo: entity.parent, duration: duration / 2, timingFunction: AnimationTimingFunction.easeInOut)
+
+                DispatchQueue.main.asyncAfter(deadline: .now() + duration / 2) {
+                    startContinuousPulse(entity, scale: targetScale, duration: duration)
+                }
+            }
+        }
+    }
+
+    /// Sube + fade (resetea), simulando vapor/steam.
+    static func startContinuousRise(_ entity: Entity, baseY: Float, riseHeight: Float, duration: TimeInterval, delay: TimeInterval = 0) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak entity] in
+            guard let entity else { return }
+            let topPos = SIMD3<Float>(entity.position.x, baseY + riseHeight, entity.position.z)
+            let target = Transform(scale: entity.scale, rotation: entity.transform.rotation, translation: topPos)
+            entity.move(to: target, relativeTo: entity.parent, duration: duration, timingFunction: AnimationTimingFunction.easeOut)
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + duration) { [weak entity] in
+                guard let entity else { return }
+                // Reset abrupto a base
+                entity.position = SIMD3<Float>(entity.position.x, baseY, entity.position.z)
+                startContinuousRise(entity, baseY: baseY, riseHeight: riseHeight, duration: duration)
+            }
+        }
     }
 
     // MARK: - Material helper
