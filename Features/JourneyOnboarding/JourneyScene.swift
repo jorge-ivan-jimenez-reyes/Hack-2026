@@ -283,6 +283,91 @@ enum JourneyBuilders {
             content.add(leaf)
             startWindDrift(leaf, range: 9.0, speed: 0.6 + Float(i) * 0.1, delay: Double(i) * 1.1)
         }
+
+        // Bandada de 3 pajaritos en formación V volando alto
+        let flock = Entity()
+        let birdOffsets: [(Float, Float, Float)] = [
+            (0,    0,    0),     // líder
+            (-0.18, -0.04, -0.12), // back-left
+            (-0.18, -0.04,  0.12)  // back-right
+        ]
+        for (i, off) in birdOffsets.enumerated() {
+            let bird = makeBird()
+            bird.position = SIMD3<Float>(off.0, off.1, off.2)
+            flock.addChild(bird)
+
+            // Alas flapping con stagger suave
+            if let leftWing = bird.findEntity(named: "wing-left") {
+                startWingFlap(leftWing, side: 1, delay: Double(i) * 0.08)
+            }
+            if let rightWing = bird.findEntity(named: "wing-right") {
+                startWingFlap(rightWing, side: -1, delay: Double(i) * 0.08)
+            }
+        }
+        flock.position = SIMD3<Float>(-4.5, 1.7, -1.3)
+        content.add(flock)
+        startContinuousDrift(flock, speed: 0.35, range: 9.5)
+    }
+
+    /// Pajarito: body sphere stretched + 2 wings angled forming V, eligible to flap.
+    static func makeBird() -> Entity {
+        let root = Entity()
+        let mat = pbr(color: .inkCharcoal, roughness: 0.5)
+
+        // Body — sphere achatada en Y, alargada en X
+        let body = ModelEntity(
+            mesh: MeshResource.generateSphere(radius: 0.018),
+            materials: [mat]
+        )
+        body.scale = SIMD3<Float>(2.0, 0.8, 1.0)
+        root.addChild(body)
+
+        // Wings — 2 thin boxes, pre-rotated formando V (arriba/afuera)
+        let wingMesh = MeshResource.generateBox(size: SIMD3<Float>(0.012, 0.005, 0.07))
+
+        let leftWing = ModelEntity(mesh: wingMesh, materials: [mat])
+        leftWing.position = SIMD3<Float>(0, 0.010, -0.040)
+        leftWing.orientation = simd_quatf(angle: -.pi / 5, axis: SIMD3<Float>(1, 0, 0))
+        leftWing.name = "wing-left"
+        root.addChild(leftWing)
+
+        let rightWing = ModelEntity(mesh: wingMesh, materials: [mat])
+        rightWing.position = SIMD3<Float>(0, 0.010, 0.040)
+        rightWing.orientation = simd_quatf(angle: .pi / 5, axis: SIMD3<Float>(1, 0, 0))
+        rightWing.name = "wing-right"
+        root.addChild(rightWing)
+
+        return root
+    }
+
+    /// Wing flap: oscila el ángulo entre `up` (más vertical) y `down` (más horizontal).
+    /// `side` = 1 para left wing (ángulos negativos), -1 para right wing (positivos).
+    static func startWingFlap(_ wing: Entity, side: Float, delay: TimeInterval = 0) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak wing] in
+            guard let wing else { return }
+            let baseAngle: Float = -side * .pi / 5  // ángulo base (V abierta)
+            let upAngle: Float   = -side * .pi / 3  // ángulo arriba (más cerrada)
+
+            let upTarget = Transform(
+                scale: wing.scale,
+                rotation: simd_quatf(angle: upAngle, axis: SIMD3<Float>(1, 0, 0)),
+                translation: wing.position
+            )
+            wing.move(to: upTarget, relativeTo: wing.parent, duration: 0.20, timingFunction: AnimationTimingFunction.easeOut)
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.20) { [weak wing] in
+                guard let wing else { return }
+                let downTarget = Transform(
+                    scale: wing.scale,
+                    rotation: simd_quatf(angle: baseAngle, axis: SIMD3<Float>(1, 0, 0)),
+                    translation: wing.position
+                )
+                wing.move(to: downTarget, relativeTo: wing.parent, duration: 0.22, timingFunction: AnimationTimingFunction.easeIn)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.22) {
+                    startWingFlap(wing, side: side)
+                }
+            }
+        }
     }
 
     /// Nube: cluster de 3 spheres cream para look puffy.
