@@ -13,20 +13,15 @@ struct RootView: View {
     private var role: UserRole? { UserRole(rawValue: userRoleRaw) }
 
     var body: some View {
-        ZStack(alignment: .topLeading) {
-            mainContent
-
-            #if DEBUG
-            DebugResetOnboardingButton(
-                didOnboard: $didOnboard,
-                userRoleRaw: $userRoleRaw,
-                didCompleteRoleSetup: $didCompleteRoleSetup
-            )
-            .padding(Spacing.m)
-            #endif
+        Group {
+            if didCompleteRoleSetup {
+                // Solo durante el uso real de la app (post-onboarding) montamos el host
+                // de reminders. Durante onboarding/setup NO molestamos.
+                mainContent.reminderHost()
+            } else {
+                mainContent
+            }
         }
-        // Reminders in-app solo cuando ya estás dentro del MainTab (no durante onboarding)
-        .reminderHost()
     }
 
     /// Feature flag: si `useJourneyOnboarding` true, usamos el journey 3D
@@ -146,43 +141,6 @@ private struct PlaceholderView: View {
         }
     }
 }
-
-#if DEBUG
-/// Solo en DEBUG. Resetea TODOS los flags del onboarding flow.
-private struct DebugResetOnboardingButton: View {
-    @Binding var didOnboard: Bool
-    @Binding var userRoleRaw: String
-    @Binding var didCompleteRoleSetup: Bool
-    @State private var showConfirm = false
-
-    var body: some View {
-        Button {
-            showConfirm = true
-        } label: {
-            Image(systemName: "arrow.counterclockwise.circle.fill")
-                .font(.title3)
-                .foregroundStyle(.red)
-                .padding(8)
-                .background(.ultraThinMaterial, in: .circle)
-        }
-        .accessibilityLabel("Restablecer todo (debug)")
-        .confirmationDialog(
-            "¿Restablecer flow completo?",
-            isPresented: $showConfirm,
-            titleVisibility: .visible
-        ) {
-            Button("Restablecer", role: .destructive) {
-                didOnboard = false
-                userRoleRaw = ""
-                didCompleteRoleSetup = false
-            }
-            Button("Cancelar", role: .cancel) {}
-        } message: {
-            Text("Reinicia onboarding + selección de rol + setup.")
-        }
-    }
-}
-#endif
 
 #Preview {
     RootView()
