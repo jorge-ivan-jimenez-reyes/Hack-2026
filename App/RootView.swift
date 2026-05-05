@@ -100,7 +100,7 @@ struct RecolectorTabView: View {
     }
 }
 
-/// Tab bar del Centro de acopio — Dashboard, Recolectores, Reportes.
+/// Tab bar del Centro de acopio — Dashboard, Recolectores, Lotes, Reportes.
 struct CentroTabView: View {
     var body: some View {
         TabView {
@@ -109,6 +109,9 @@ struct CentroTabView: View {
             }
             Tab("Recolectores", systemImage: "person.3.fill") {
                 RecolectoresListView()
+            }
+            Tab("Lotes", systemImage: "leaf.arrow.circlepath") {
+                BatchListView()
             }
             Tab("Reportes", systemImage: "exclamationmark.bubble.fill") {
                 ReportesListView()

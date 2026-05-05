@@ -31,6 +31,7 @@
 		1FC5603E84EB79316BAA4887 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2C3E152A2FE2C6C800E3EBF /* HomeView.swift */; };
 		26EF5BC1A91D04DBF1EC3C9D /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00A4C9369850152402EA4588 /* OnboardingView.swift */; };
 		294198CBE58B454BB7EC59E3 /* LanguageCoach.swift in Sources */ = {isa = PBXBuildFile; fileRef = E295A49FA014BED05EFD66FA /* LanguageCoach.swift */; };
+		303E25C7F90E54A3061AFD1A /* BatchHealthAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 029C9E004AF1449D15F65580 /* BatchHealthAnalyzer.swift */; };
 		30981D2C6FAAB72B7AD673DE /* Reporte.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0595C21A1D06FD2C1A9003 /* Reporte.swift */; };
 		30FDE06AC763E2D9ED3AC931 /* QuizCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53999F24AFCB0A610EFBD7BC /* QuizCard.swift */; };
 		37406643E3DC604FCDE255D8 /* ReportesListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C99CCC37B05406BB4AAD46EA /* ReportesListView.swift */; };
@@ -55,6 +56,7 @@
 		6F74B6835CFC90C085722C11 /* Reminder.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5816E9A1C88B9C4EB49457 /* Reminder.swift */; };
 		7073F1C0435A63C8D7D68C17 /* RecolectoresListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE41A5F3657705294D698CD1 /* RecolectoresListView.swift */; };
 		707615CA2221A672ED1145EB /* BucketPickupOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74BA98292636ED074C8AAE4D /* BucketPickupOverlay.swift */; };
+		72857AC75C08AE93AB6AC542 /* BatchDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3F8115C23581FE5C00DB77A /* BatchDetailView.swift */; };
 		756C302B9D03803F71A76C33 /* ScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92B29817C9FEC0B8DE46EAE9 /* ScannerView.swift */; };
 		809374E0D363F220531A1C86 /* JourneyData.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA23AB26C3EEF20FA764EA47 /* JourneyData.swift */; };
 		835A588F36DA8ED17EEDFF6A /* BucketCommunityOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87E477014B203000A47471FC /* BucketCommunityOverlay.swift */; };
@@ -81,11 +83,13 @@
 		CF126359CEB93A40A8E2E95A /* WasteCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29388D8C2EB022682628745D /* WasteCategory.swift */; };
 		D2248DAE1DDC8AC7AFFC5FD5 /* QuizQuestion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1BCEF26E845E5A28893D18 /* QuizQuestion.swift */; };
 		D3C2845D7EC9736C91DEC4EE /* HomeHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0051D1AC2730DA16B1AF217D /* HomeHeader.swift */; };
+		DDFBF7144256B0234E1E192E /* CompostBatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD6DB4CCB027FF961146D336 /* CompostBatch.swift */; };
 		E37F8575CEB973319D8E62E6 /* ProceduralBucketHero.swift in Sources */ = {isa = PBXBuildFile; fileRef = F699FE43CB5D771744FD928F /* ProceduralBucketHero.swift */; };
 		E6F2D20177607D5C0D476DD0 /* ScanLineEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = B71F95C1F80E89F1DC570763 /* ScanLineEffect.swift */; };
 		E7202402319BF400E7CAA500 /* VisionWasteClassifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF9593F06597902BFF77B361 /* VisionWasteClassifier.swift */; };
 		E7519CD89C987D1B3A5E96A6 /* ConfettiView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F8BD3F6483561B05A23C8FC /* ConfettiView.swift */; };
 		E88D33999E68EDAE2AC74A13 /* FloatingParticles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27268D5B59BBCD9FE02C370F /* FloatingParticles.swift */; };
+		EC475CC646B572BB21A208A6 /* BatchListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27D8D4DF91838FFA2F96353E /* BatchListView.swift */; };
 		ECA58B537BCB4A75581C2E33 /* BucketTransformOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13A2A842BD2EFB9DEE9A1832 /* BucketTransformOverlay.swift */; };
 		F0E3FC5775FE3F64CC8C6BF4 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = E8D520E1A6870D566956FDB8 /* Lottie */; };
 		F6AECD8EB36894AD53A64E8E /* CoachTipCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62162D079329EB9BA65BDD94 /* CoachTipCard.swift */; };
@@ -96,6 +100,7 @@
 /* Begin PBXFileReference section */
 		0051D1AC2730DA16B1AF217D /* HomeHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeHeader.swift; sourceTree = "<group>"; };
 		00A4C9369850152402EA4588 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		029C9E004AF1449D15F65580 /* BatchHealthAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchHealthAnalyzer.swift; sourceTree = "<group>"; };
 		02A0BF111245FF65A41A7802 /* BucketFillingOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BucketFillingOverlay.swift; sourceTree = "<group>"; };
 		02DE9B38C28612C7E4BFB87A /* LottiePlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LottiePlayer.swift; sourceTree = "<group>"; };
 		045AC3B319FD9B1D042A3F7D /* OnboardingPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPage.swift; sourceTree = "<group>"; };
@@ -109,6 +114,7 @@
 		1CDD84F92F6757874DA2767D /* RecolectorRoster.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecolectorRoster.swift; sourceTree = "<group>"; };
 		27268D5B59BBCD9FE02C370F /* FloatingParticles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingParticles.swift; sourceTree = "<group>"; };
 		274B84D861CBADA016101DF9 /* CategoryBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryBadge.swift; sourceTree = "<group>"; };
+		27D8D4DF91838FFA2F96353E /* BatchListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchListView.swift; sourceTree = "<group>"; };
 		28CFFEDB65BBD0E3A5003AE2 /* AIAvailability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIAvailability.swift; sourceTree = "<group>"; };
 		29388D8C2EB022682628745D /* WasteCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WasteCategory.swift; sourceTree = "<group>"; };
 		2ABBF7D618507403BE181C52 /* ScannerCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScannerCoordinator.swift; sourceTree = "<group>"; };
@@ -172,10 +178,12 @@
 		D4046254A561F7B74CF090C7 /* PrimaryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimaryButton.swift; sourceTree = "<group>"; };
 		D9226AE1DF0D85ECF504800B /* CubetaTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CubetaTracker.swift; sourceTree = "<group>"; };
 		DD40837AAF2A8230D1E7F59B /* CoachState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoachState.swift; sourceTree = "<group>"; };
+		DD6DB4CCB027FF961146D336 /* CompostBatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompostBatch.swift; sourceTree = "<group>"; };
 		E295A49FA014BED05EFD66FA /* LanguageCoach.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageCoach.swift; sourceTree = "<group>"; };
 		E2C3E152A2FE2C6C800E3EBF /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		E3077116C76443E01400B00D /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		E3752380463A68E07F338307 /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
+		E3F8115C23581FE5C00DB77A /* BatchDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchDetailView.swift; sourceTree = "<group>"; };
 		F0E6B5E3B93166B536C77C42 /* HeroCubetaCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeroCubetaCard.swift; sourceTree = "<group>"; };
 		F699FE43CB5D771744FD928F /* ProceduralBucketHero.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProceduralBucketHero.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -323,6 +331,7 @@
 			children = (
 				13A70C4719B2320D307D6988 /* CenterMap */,
 				110E689529F40AAA7CCCF106 /* Centro */,
+				B49F8AB0FF0AD13BC03A1A9D /* CentroLab */,
 				E86C21F23B8263E4FE67C59D /* CentroSetup */,
 				9723F3761C495555AAED5162 /* Coach */,
 				4EC60F9489EFADAC5642C289 /* History */,
@@ -491,6 +500,17 @@
 				C45CD986FF2AE088D599F442 /* PageIndicator.swift */,
 			);
 			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		B49F8AB0FF0AD13BC03A1A9D /* CentroLab */ = {
+			isa = PBXGroup;
+			children = (
+				E3F8115C23581FE5C00DB77A /* BatchDetailView.swift */,
+				029C9E004AF1449D15F65580 /* BatchHealthAnalyzer.swift */,
+				27D8D4DF91838FFA2F96353E /* BatchListView.swift */,
+				DD6DB4CCB027FF961146D336 /* CompostBatch.swift */,
+			);
+			path = CentroLab;
 			sourceTree = "<group>";
 		};
 		BD7142EC963C77B7C618820F /* ProfileSelection */ = {
@@ -680,6 +700,9 @@
 				93B79B24C268521AF6A1B813 /* AIAvailability.swift in Sources */,
 				3C37A533E43E7DC1BA43BB7A /* AccessibilityModifiers.swift in Sources */,
 				92CFD2CB706750551C117204 /* Animations.swift in Sources */,
+				72857AC75C08AE93AB6AC542 /* BatchDetailView.swift in Sources */,
+				303E25C7F90E54A3061AFD1A /* BatchHealthAnalyzer.swift in Sources */,
+				EC475CC646B572BB21A208A6 /* BatchListView.swift in Sources */,
 				835A588F36DA8ED17EEDFF6A /* BucketCommunityOverlay.swift in Sources */,
 				00B0C6E20D00B0D7412EC500 /* BucketFillingOverlay.swift in Sources */,
 				707615CA2221A672ED1145EB /* BucketPickupOverlay.swift in Sources */,
@@ -697,6 +720,7 @@
 				4CFCC837BEB15745FE0AA4B1 /* CoachState.swift in Sources */,
 				F6AECD8EB36894AD53A64E8E /* CoachTipCard.swift in Sources */,
 				4C72B7D4BD400F14B010D55D /* CoachView.swift in Sources */,
+				DDFBF7144256B0234E1E192E /* CompostBatch.swift in Sources */,
 				E7519CD89C987D1B3A5E96A6 /* ConfettiView.swift in Sources */,
 				6BA9DB56FC934D1C05C8583D /* CuadraCard.swift in Sources */,
 				A58DB54A7B6B8DB18789D0F8 /* CubetaTracker.swift in Sources */,
