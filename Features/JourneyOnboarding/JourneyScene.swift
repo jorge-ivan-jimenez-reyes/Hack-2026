@@ -135,22 +135,120 @@ enum JourneyBuilders {
     static func makePath() -> Entity {
         let root = Entity()
 
-        let pathMesh = MeshResource.generateBox(size: SIMD3<Float>(8.5, 0.02, 0.6))
-        var pathMat = PhysicallyBasedMaterial()
-        pathMat.baseColor = .init(tint: UIColor(red: 0.78, green: 0.71, blue: 0.55, alpha: 1.0))
-        pathMat.roughness = 0.9
-        let path = ModelEntity(mesh: pathMesh, materials: [pathMat])
-        path.position = SIMD3<Float>(0, 0.011, 0.3)
-        root.addChild(path)
+        // Asfalto principal (gris oscuro)
+        var asphaltMat = PhysicallyBasedMaterial()
+        asphaltMat.baseColor = .init(tint: UIColor(red: 0.32, green: 0.32, blue: 0.34, alpha: 1.0))
+        asphaltMat.roughness = 0.85
+        let road = ModelEntity(
+            mesh: MeshResource.generateBox(size: SIMD3<Float>(8.5, 0.02, 0.7)),
+            materials: [asphaltMat]
+        )
+        road.position = SIMD3<Float>(0, 0.011, 0.3)
+        root.addChild(road)
 
-        // Grass tufts
+        // Líneas blancas centrales (8 segmentos discontinuos)
+        var lineMat = PhysicallyBasedMaterial()
+        lineMat.baseColor = .init(tint: UIColor.white)
+        lineMat.roughness = 0.6
         for i in 0..<10 {
             let tx = -4.0 + Float(i) * 0.9
-            let tz: Float = i % 2 == 0 ? -0.3 : 0.95
+            let line = ModelEntity(
+                mesh: MeshResource.generateBox(size: SIMD3<Float>(0.30, 0.005, 0.04)),
+                materials: [lineMat]
+            )
+            line.position = SIMD3<Float>(tx, 0.022, 0.3)
+            root.addChild(line)
+        }
+
+        // Banquetas/curbs en ambos lados
+        let curbMat = pbr(color: .cream, roughness: 0.7, darkness: 0.10)
+        for zSign: Float in [-1, 1] {
+            let curb = ModelEntity(
+                mesh: MeshResource.generateBox(size: SIMD3<Float>(8.5, 0.04, 0.10)),
+                materials: [curbMat]
+            )
+            curb.position = SIMD3<Float>(0, 0.022, 0.3 + zSign * 0.40)
+            root.addChild(curb)
+        }
+
+        // Grass tufts en los bordes (más alejados)
+        for i in 0..<10 {
+            let tx = -4.0 + Float(i) * 0.9
+            let tz: Float = i % 2 == 0 ? -0.4 : 1.0
             let tuft = makeGrassTuft()
             tuft.position = SIMD3<Float>(tx, 0.025, tz)
             root.addChild(tuft)
         }
+
+        // Árboles ambient a los lados (entre stations)
+        let treePositions: [(Float, Float)] = [
+            (-3.4, -0.55), (-1.6, 1.15), (-0.1, -0.55),
+            (1.6, 1.15), (3.4, -0.55)
+        ]
+        for (tx, tz) in treePositions {
+            let tree = makeTree()
+            tree.position = SIMD3<Float>(tx, 0, tz)
+            root.addChild(tree)
+        }
+
+        // Postes de luz a los lados (4)
+        let lampPositions: [(Float, Float)] = [
+            (-3.0, 0.85), (-1.0, -0.25), (1.0, 0.85), (3.0, -0.25)
+        ]
+        for (lx, lz) in lampPositions {
+            let lamp = makeLampPost()
+            lamp.position = SIMD3<Float>(lx, 0, lz)
+            root.addChild(lamp)
+        }
+
+        return root
+    }
+
+    /// Árbol estilizado: tronco brown + copa esférica verde.
+    static func makeTree() -> Entity {
+        let root = Entity()
+
+        let trunkMat = pbr(color: Color(red: 0.45, green: 0.30, blue: 0.18), roughness: 0.85)
+        let leavesMat = pbr(color: .moss, roughness: 0.7)
+
+        let trunk = ModelEntity(
+            mesh: MeshResource.generateCylinder(height: 0.18, radius: 0.025),
+            materials: [trunkMat]
+        )
+        trunk.position = SIMD3<Float>(0, 0.09, 0)
+        root.addChild(trunk)
+
+        let leaves = ModelEntity(
+            mesh: MeshResource.generateSphere(radius: 0.10),
+            materials: [leavesMat]
+        )
+        leaves.scale = SIMD3<Float>(1.1, 1.2, 1.1)
+        leaves.position = SIMD3<Float>(0, 0.25, 0)
+        root.addChild(leaves)
+
+        return root
+    }
+
+    /// Poste de luz: tronco metálico delgado + cabeza con bombilla.
+    static func makeLampPost() -> Entity {
+        let root = Entity()
+
+        let postMat = pbr(color: .inkCharcoal, roughness: 0.4, metallic: 0.6)
+        let bulbMat = pbr(color: .limeSpark, roughness: 0.2, metallic: 0.1)
+
+        let post = ModelEntity(
+            mesh: MeshResource.generateCylinder(height: 0.30, radius: 0.012),
+            materials: [postMat]
+        )
+        post.position = SIMD3<Float>(0, 0.15, 0)
+        root.addChild(post)
+
+        let bulb = ModelEntity(
+            mesh: MeshResource.generateSphere(radius: 0.04),
+            materials: [bulbMat]
+        )
+        bulb.position = SIMD3<Float>(0, 0.32, 0)
+        root.addChild(bulb)
 
         return root
     }
@@ -359,6 +457,12 @@ enum JourneyBuilders {
         let darkMat = pbr(color: accent, roughness: 0.7, darkness: 0.4)
         let leafMat = pbr(color: .limeSpark, roughness: 0.5)
 
+        // Casita atrás de la cubeta (origen del orgánico)
+        let house = makeMiniHouse(roofColor: accent)
+        house.position = SIMD3<Float>(0, 0, -0.55)
+        root.addChild(house)
+
+        // Cubeta principal
         let body = ModelEntity(
             mesh: MeshResource.generateCylinder(height: 0.18, radius: 0.12),
             materials: [bodyMat]
@@ -384,33 +488,79 @@ enum JourneyBuilders {
         return root
     }
 
-    static func makeStationHouse(accent: Color) -> Entity {
+    /// Casita minimalista — body cream + roof cono accent + chimenea.
+    static func makeMiniHouse(roofColor: Color, scale: Float = 1.0) -> Entity {
         let root = Entity()
 
-        let bodyMat = pbr(color: .cream, roughness: 0.7)
-        let roofMat = pbr(color: accent, roughness: 0.5)
-        let doorMat = pbr(color: accent, roughness: 0.6, darkness: 0.3)
+        let bodyMat = pbr(color: .cream, roughness: 0.75)
+        let roofMat = pbr(color: roofColor, roughness: 0.55)
+        let chimneyMat = pbr(color: .clay, roughness: 0.7)
+        let windowMat = pbr(color: .forestDeep, roughness: 0.3, metallic: 0.5)
 
         let body = ModelEntity(
-            mesh: MeshResource.generateBox(size: SIMD3<Float>(0.22, 0.20, 0.20)),
+            mesh: MeshResource.generateBox(size: SIMD3<Float>(0.30, 0.22, 0.26)),
             materials: [bodyMat]
         )
-        body.position = SIMD3<Float>(0, 0.11, 0)
+        body.position = SIMD3<Float>(0, 0.12, 0)
         root.addChild(body)
 
         let roof = ModelEntity(
-            mesh: MeshResource.generateCone(height: 0.14, radius: 0.18),
+            mesh: MeshResource.generateCone(height: 0.16, radius: 0.22),
             materials: [roofMat]
         )
-        roof.position = SIMD3<Float>(0, 0.28, 0)
+        roof.position = SIMD3<Float>(0, 0.31, 0)
         root.addChild(roof)
 
-        let door = ModelEntity(
-            mesh: MeshResource.generateBox(size: SIMD3<Float>(0.005, 0.10, 0.06)),
-            materials: [doorMat]
+        let chimney = ModelEntity(
+            mesh: MeshResource.generateBox(size: SIMD3<Float>(0.04, 0.10, 0.04)),
+            materials: [chimneyMat]
         )
-        door.position = SIMD3<Float>(-0.111, 0.06, 0)
-        root.addChild(door)
+        chimney.position = SIMD3<Float>(0.08, 0.36, 0)
+        root.addChild(chimney)
+
+        let window = ModelEntity(
+            mesh: MeshResource.generateBox(size: SIMD3<Float>(0.005, 0.06, 0.06)),
+            materials: [windowMat]
+        )
+        window.position = SIMD3<Float>(-0.151, 0.13, 0.06)
+        root.addChild(window)
+
+        root.scale = SIMD3<Float>(repeating: scale)
+        return root
+    }
+
+    static func makeStationHouse(accent: Color) -> Entity {
+        let root = Entity()
+
+        // Casa principal grande + buzón + 2 árboles
+        let house = makeMiniHouse(roofColor: accent, scale: 1.2)
+        root.addChild(house)
+
+        // Buzón al frente
+        let mailMat = pbr(color: accent, roughness: 0.4, metallic: 0.5)
+        let post = ModelEntity(
+            mesh: MeshResource.generateCylinder(height: 0.12, radius: 0.008),
+            materials: [pbr(color: .inkCharcoal, roughness: 0.5)]
+        )
+        post.position = SIMD3<Float>(0.30, 0.06, 0.12)
+        root.addChild(post)
+
+        let mailbox = ModelEntity(
+            mesh: MeshResource.generateBox(size: SIMD3<Float>(0.06, 0.05, 0.08)),
+            materials: [mailMat]
+        )
+        mailbox.position = SIMD3<Float>(0.30, 0.14, 0.12)
+        root.addChild(mailbox)
+
+        // 2 árboles flanqueando
+        let tree1 = makeTree()
+        tree1.position = SIMD3<Float>(-0.35, 0, -0.25)
+        root.addChild(tree1)
+
+        let tree2 = makeTree()
+        tree2.scale = SIMD3<Float>(repeating: 0.85)
+        tree2.position = SIMD3<Float>(0.40, 0, -0.30)
+        root.addChild(tree2)
 
         return root
     }
@@ -420,7 +570,25 @@ enum JourneyBuilders {
 
         let leafMat = pbr(color: .limeSpark, roughness: 0.55)
         let darkMat = pbr(color: accent, roughness: 0.7, darkness: 0.5)
+        let warehouseMat = pbr(color: .clay, roughness: 0.7)
+        let warehouseRoof = pbr(color: .inkCharcoal, roughness: 0.6, metallic: 0.3)
 
+        // Nave / warehouse atrás (planta de procesamiento)
+        let warehouse = ModelEntity(
+            mesh: MeshResource.generateBox(size: SIMD3<Float>(0.50, 0.30, 0.40)),
+            materials: [warehouseMat]
+        )
+        warehouse.position = SIMD3<Float>(0, 0.16, -0.50)
+        root.addChild(warehouse)
+
+        let roof = ModelEntity(
+            mesh: MeshResource.generateBox(size: SIMD3<Float>(0.52, 0.04, 0.42)),
+            materials: [warehouseRoof]
+        )
+        roof.position = SIMD3<Float>(0, 0.32, -0.50)
+        root.addChild(roof)
+
+        // Pila central principal
         let base = ModelEntity(
             mesh: MeshResource.generateSphere(radius: 0.13),
             materials: [darkMat]
@@ -452,6 +620,17 @@ enum JourneyBuilders {
         topLeaf.position = SIMD3<Float>(0, 0.18, 0)
         root.addChild(topLeaf)
 
+        // 2 pilas adicionales más chicas (windrows) a los lados
+        for xSign: Float in [-1, 1] {
+            let mini = ModelEntity(
+                mesh: MeshResource.generateSphere(radius: 0.08),
+                materials: [darkMat]
+            )
+            mini.scale = SIMD3<Float>(1.6, 0.5, 1.0)
+            mini.position = SIMD3<Float>(xSign * 0.30, 0.04, -0.20)
+            root.addChild(mini)
+        }
+
         return root
     }
 
@@ -461,6 +640,15 @@ enum JourneyBuilders {
         let mat = pbr(color: accent, roughness: 0.6)
         let darkMat = pbr(color: accent, roughness: 0.7, darkness: 0.4)
 
+        // Cuadra: 5 mini casas atrás formando una hilera
+        let houseColors: [Color] = [.brand, .clay, .moss, .limeSpark, .brand]
+        for i in 0..<5 {
+            let house = makeMiniHouse(roofColor: houseColors[i], scale: 0.7)
+            house.position = SIMD3<Float>(-0.40 + Float(i) * 0.22, 0, -0.55)
+            root.addChild(house)
+        }
+
+        // Anillo de 6 mini cubetas en frente
         for i in 0..<6 {
             let angle = Double(i) * 2 * .pi / 6
             let mini = Entity()
@@ -480,9 +668,9 @@ enum JourneyBuilders {
             mini.addChild(rim)
 
             mini.position = SIMD3<Float>(
-                Float(cos(angle)) * 0.16,
+                Float(cos(angle)) * 0.18,
                 0,
-                Float(sin(angle)) * 0.16
+                Float(sin(angle)) * 0.18 + 0.05
             )
             root.addChild(mini)
         }
