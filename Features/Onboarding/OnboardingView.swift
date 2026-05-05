@@ -42,8 +42,10 @@ struct OnboardingView: View {
             Color.clear.frame(height: 100)  // espacio para topBar + offset
 
             ZStack {
-                ProceduralBucketHero(accent: currentAccent, tilt: dragTilt)
+                heroForCurrentPage
                     .frame(width: 340, height: 340)
+                    .id(activeHeroId)              // forces transition al cambiar
+                    .transition(heroTransition)    // morph blur + fade
 
                 storyOverlay
                     .frame(width: 340, height: 340)
@@ -52,6 +54,40 @@ struct OnboardingView: View {
 
             Spacer(minLength: 0)
         }
+    }
+
+    /// Hero por página: si hay Lottie disponible (archivo en bundle), úsalo;
+    /// si no, fallback al `ProceduralBucketHero` (3D nativo).
+    @ViewBuilder
+    private var heroForCurrentPage: some View {
+        let page = pages[index]
+        if let lottieName = page.lottieName,
+           LottiePlayer.exists(lottieName) {
+            LottiePlayer(name: lottieName, fallbackSymbol: page.symbol)
+                .foregroundStyle(currentAccent)
+                .padding(20)
+        } else {
+            ProceduralBucketHero(accent: currentAccent, tilt: dragTilt)
+        }
+    }
+
+    /// Identifier que cambia al pasar de Lottie → procedural o cambiar de archivo.
+    /// Esto fuerza a SwiftUI a aplicar la transición.
+    private var activeHeroId: String {
+        let page = pages[index]
+        if let name = page.lottieName, LottiePlayer.exists(name) {
+            return "lottie-\(name)"
+        }
+        return "procedural"
+    }
+
+    /// Morph transition entre heros: scale + opacity, sin slide (el TabView
+    /// ya hace slide del texto). Da sensación de "uno se desvanece, otro emerge".
+    private var heroTransition: AnyTransition {
+        .asymmetric(
+            insertion: .scale(scale: 0.85).combined(with: .opacity),
+            removal: .scale(scale: 1.05).combined(with: .opacity)
+        )
     }
 
     /// Overlay storytelling de la página activa — switch por index.

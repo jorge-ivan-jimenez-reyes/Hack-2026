@@ -18,6 +18,13 @@ struct LottiePlayer: View {
         LottieAnimation.named(name)
     }
 
+    /// Verifica si un Lottie JSON existe en el bundle. Útil para decidir entre
+    /// LottiePlayer y otro hero antes de instanciar.
+    static func exists(_ name: String) -> Bool {
+        Bundle.main.url(forResource: name, withExtension: "json") != nil ||
+        LottieAnimation.named(name) != nil
+    }
+
     var body: some View {
         if let anim = animation {
             LottieView(animation: anim)

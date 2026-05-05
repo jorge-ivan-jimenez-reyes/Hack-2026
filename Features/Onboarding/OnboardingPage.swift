@@ -5,6 +5,9 @@ import SwiftUI
 struct OnboardingPage: Identifiable, Hashable {
     let id: Int
     let symbol: String
+    /// Si hay un archivo `<lottieName>.json` en `Resources/Lottie/`,
+    /// se usa como hero animado. Si no, fallback al diseño procedural.
+    let lottieName: String?
     let title: String
     let subtitle: String
     let accent: Color
@@ -21,6 +24,7 @@ extension OnboardingPage {
         OnboardingPage(
             id: 0,
             symbol: "arrow.3.trianglepath",
+            lottieName: "onboarding-cycle",
             title: "Tu cubeta, tu ciclo",
             subtitle: "Separa tu orgánico en casa. Cada cáscara, cada borra de café es el inicio de la economía circular.",
             accent: .limeSpark,
@@ -29,6 +33,7 @@ extension OnboardingPage {
         OnboardingPage(
             id: 1,
             symbol: "house.and.flag.fill",
+            lottieName: "onboarding-pickup",
             title: "Nosotros pasamos por ella",
             subtitle: "Cero viajes. Te avisamos el día y la hora. Tú la dejas afuera, nosotros la cambiamos por una limpia.",
             accent: .clay,
@@ -37,6 +42,7 @@ extension OnboardingPage {
         OnboardingPage(
             id: 2,
             symbol: "arrow.2.squarepath",
+            lottieName: "onboarding-transform",
             title: "15 = 1",
             subtitle: "Por cada 15 cubetas que separas, recibes 1 cubeta de abono real para tu casa, jardín o macetas.",
             accent: .limeSpark,
@@ -45,6 +51,7 @@ extension OnboardingPage {
         OnboardingPage(
             id: 3,
             symbol: "person.3.sequence.fill",
+            lottieName: "onboarding-community",
             title: "Tu cuadra suma contigo",
             subtitle: "Cuando tus vecinos también separan, todos ganan: más abono, menos basura, mejor barrio.",
             accent: .moss,
