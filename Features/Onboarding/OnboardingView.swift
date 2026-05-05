@@ -64,12 +64,20 @@ struct OnboardingView: View {
         LightSweep(trigger: index, color: currentAccent)
     }
 
-    /// Hero compartido. NO se re-instancia al cambiar de página — solo
-    /// cambia el `accent` que internamente actualiza el material.
-    /// Esto da continuidad visual (no hay "snap" entre páginas).
+    /// Hero compartido todas las páginas: ProceduralBucketHero (3D bucket).
+    /// Si hay Lottie en bundle con el nombre de la página, usa Lottie.
+    /// La narrativa de cada página la cuenta el storyOverlay encima.
     @ViewBuilder
     private var heroForCurrentPage: some View {
-        ProceduralBucketHero(accent: currentAccent, tilt: dragTilt)
+        let page = pages[index]
+        if let lottieName = page.lottieName,
+           LottiePlayer.exists(lottieName) {
+            LottiePlayer(name: lottieName, fallbackSymbol: page.symbol)
+                .foregroundStyle(currentAccent)
+                .padding(20)
+        } else {
+            ProceduralBucketHero(accent: currentAccent, tilt: dragTilt)
+        }
     }
 
 

@@ -7,11 +7,14 @@ import SwiftUI
 struct CentroHomeView: View {
     @AppStorage("centro.name") private var centroName = "Centro Roma Norte"
 
+    @State private var showWrapped = false
+
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             ScrollView {
                 VStack(spacing: Spacing.l) {
                     header
+                    wrappedTeaserCard
                     statsCard
                     abonoQueueCard
                     rutaCard
@@ -27,6 +30,57 @@ struct CentroHomeView: View {
                 .padding(.trailing, Spacing.l)
                 .padding(.bottom, Spacing.l)
         }
+        .fullScreenCover(isPresented: $showWrapped) {
+            WrappedView(data: .mock)
+        }
+    }
+
+    /// Card prominente que invita a ver el wrapped del mes.
+    private var wrappedTeaserCard: some View {
+        Button {
+            Haptics.confirm()
+            showWrapped = true
+        } label: {
+            HStack(spacing: Spacing.m) {
+                ZStack {
+                    Circle()
+                        .fill(.white.opacity(0.20))
+                    Image(systemName: "sparkles")
+                        .font(.title2)
+                        .foregroundStyle(.white)
+                        .symbolEffect(.variableColor.iterative.reversing, options: .repeat(.continuous))
+                }
+                .frame(width: 52, height: 52)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Tu mes en composta")
+                        .font(.appHeadline.weight(.bold))
+                        .foregroundStyle(.white)
+                    Text("Mayo 2026 · Mira tu impacto")
+                        .font(.appCaption)
+                        .foregroundStyle(.white.opacity(0.85))
+                }
+
+                Spacer()
+
+                Image(systemName: "play.fill")
+                    .font(.title3)
+                    .foregroundStyle(.white)
+            }
+            .padding(Spacing.l)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background {
+                LinearGradient(
+                    colors: [.brand, .moss, .clay],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            }
+            .clipShape(RoundedRectangle(cornerRadius: Radius.l))
+            .shadow(color: Color.brand.opacity(0.30), radius: 18, y: 6)
+        }
+        .buttonStyle(.plain)
+        .padding(.horizontal, Spacing.l)
     }
 
     // MARK: - Sections
