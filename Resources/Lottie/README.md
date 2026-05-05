@@ -2,32 +2,44 @@
 
 JSONs de [LottieFiles](https://lottiefiles.com) se cargan acá. Los usa `LottiePlayer(name:fallbackSymbol:)` desde `Core/DesignSystem/Effects/LottiePlayer.swift`.
 
-> **Importante:** la app **NUNCA se rompe** por falta de un JSON. `LottiePlayer` automáticamente vuelve al SF Symbol con animación `.pulse` como fallback.
+> **Importante:** la app **NUNCA se rompe** por falta de un JSON. `LottiePlayer` automáticamente vuelve al SF Symbol con animación `.pulse` como fallback. Puedes compilar y correr sin ningún archivo aquí.
 
 ## Cómo agregar uno
 
-1. Ir a [LottieFiles eco-friendly free](https://lottiefiles.com/free-animations/eco-friendly) o [sustainability free](https://lottiefiles.com/free-animations/sustainability)
+1. Ir a [lottiefiles.com](https://lottiefiles.com) y buscar la animación
 2. Crear cuenta gratis (o login)
-3. Click en la animación deseada → **"Lottie JSON"** → descargar
-4. Guardar el archivo aquí con nombre slug, ej. `onboarding-leaf.json`
+3. Click en la animación → **"Lottie JSON"** → descargar
+4. Guardar el archivo aquí con el nombre exacto de la tabla de abajo
 5. Correr `xcodegen generate` para regenerar el `.xcodeproj` (XcodeGen incluye automáticamente todo `.json` de esta carpeta)
-6. Rebuild → ya jala con `LottiePlayer(name: "onboarding-leaf", fallbackSymbol: "leaf.circle.fill")`
+6. Rebuild → ya jala automáticamente
 
-## JSONs esperados (cuando los bajen)
+## JSONs esperados — Guía de Reciclaje
 
-| Nombre del archivo | Dónde se usa | Tema sugerido |
+| Archivo | Dónde se usa | Qué buscar en LottieFiles |
 |---|---|---|
-| `onboarding-leaf.json` | Onboarding hero icon | Hoja verde animada |
-| `recycle-loop.json` | History empty state | Símbolo de reciclaje girando |
-| `sparkle-ai.json` | Coach greeter | Estrellitas / IA |
+| `guide-organic.json` | Hero de Residuos Orgánicos | "compost", "organic waste", "leaves", "leaf" |
+| `guide-inorganic.json` | Hero de Residuos Inorgánicos | "recycling", "recycle loop", "plastic bottle" |
+| `guide-sanitary.json` | Hero de Residuos Sanitarios | "medical waste", "sanitary", "clean" |
+| `quiz-correct.json` | Feedback correcto en el quiz | "checkmark", "success", "correct", "check" |
+| `quiz-wrong.json` | Feedback incorrecto en el quiz | "wrong", "error", "x mark", "incorrect" |
+| `quiz-trophy.json` | Pantalla de resultados | "trophy", "award", "winner", "celebration" |
+| `recycle-loop.json` | Ícono en el header de la guía | "recycling symbol", "recycle loop" |
+
+## JSONs esperados — Otros
+
+| Archivo | Dónde se usa | Qué buscar |
+|---|---|---|
+| `onboarding-leaf.json` | Onboarding hero icon | "leaf", "eco", "plant" |
+| `sparkle-ai.json` | Coach greeter | "sparkle", "ai", "stars" |
 
 ## Licencias
 
-Verifica que la animación sea compatible con uso en hackathon: **CC0, MIT, "free for any use"**, o licencia de LottieFiles "Free". Si pide atribución, agrégala en `docs/credits.md`.
+Verifica que la animación sea compatible con uso en hackathon: **CC0, MIT, "free for any use"**, o licencia de LottieFiles "Free". Si pide atribución, agrégala en `docs/credits.md`. Evita las que digan "Premium".
 
-## Animaciones gratis recomendadas (verifica licencia antes)
+## Links útiles
 
-- [Eco Living](https://lottiefiles.com/13893-eco-living)
-- [Eco Friendly / Green Energy](https://lottiefiles.com/47813-eco-friendly-environmentally-friendly-green-energy-renewable-energy)
-- [Free Eco-Friendly Pack](https://lottiefiles.com/free-animations/eco-friendly)
-- [Free Sustainability Pack](https://lottiefiles.com/free-animations/sustainability)
+- [Eco-friendly animations](https://lottiefiles.com/free-animations/eco-friendly)
+- [Sustainability animations](https://lottiefiles.com/free-animations/sustainability)
+- [Recycling animations](https://lottiefiles.com/free-animations/recycling)
+- [Success / checkmark](https://lottiefiles.com/free-animations/check)
+- [Trophy / award](https://lottiefiles.com/free-animations/award)
