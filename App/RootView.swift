@@ -29,10 +29,19 @@ struct RootView: View {
         .reminderHost()
     }
 
+    /// Feature flag: si `useJourneyOnboarding` true, usamos el journey 3D
+    /// con camioncito; si false, el OnboardingView educativo de páginas.
+    /// Cambiar aquí para alternar entre ambos durante demos.
+    private let useJourneyOnboarding = true
+
     @ViewBuilder
     private var mainContent: some View {
         if !didOnboard {
-            OnboardingView { didOnboard = true }
+            if useJourneyOnboarding {
+                JourneyView { didOnboard = true }
+            } else {
+                OnboardingView { didOnboard = true }
+            }
         } else if role == nil {
             ProfileSelectionView { selected in
                 userRoleRaw = selected.rawValue
