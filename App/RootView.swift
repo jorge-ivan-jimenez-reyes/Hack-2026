@@ -25,6 +25,8 @@ struct RootView: View {
             .padding(Spacing.m)
             #endif
         }
+        // Reminders in-app solo cuando ya estás dentro del MainTab (no durante onboarding)
+        .reminderHost()
     }
 
     @ViewBuilder
