@@ -16,6 +16,9 @@ struct JourneyScene: View {
             let path = JourneyBuilders.makePath()
             content.add(path)
 
+            // Atmósfera: sol + nubes + hojas al viento
+            JourneyBuilders.addAtmosphere(to: content)
+
             // 4 stations
             for station in JourneyStation.all {
                 let entity = JourneyBuilders.makeStation(for: station)
@@ -227,6 +230,129 @@ enum JourneyBuilders {
         root.addChild(leaves)
 
         return root
+    }
+
+    // MARK: - Atmosphere
+
+    /// Pone sol + 3 nubes drifting + 5 hojas al viento en el cielo.
+    static func addAtmosphere(to content: any RealityViewContentProtocol) {
+        // Sol pale arriba a la derecha
+        let sun = ModelEntity(
+            mesh: MeshResource.generateSphere(radius: 0.18),
+            materials: [pbr(color: Color(red: 1.0, green: 0.94, blue: 0.78), roughness: 0.95)]
+        )
+        sun.position = SIMD3<Float>(2.5, 1.8, -2.0)
+        content.add(sun)
+
+        // Halo radial alrededor del sol (segunda sphere más grande, casi transparente)
+        let halo = ModelEntity(
+            mesh: MeshResource.generateSphere(radius: 0.30),
+            materials: [pbr(color: Color(red: 1.0, green: 0.96, blue: 0.85), roughness: 1.0)]
+        )
+        halo.scale = SIMD3<Float>(repeating: 1.2)
+        halo.position = SIMD3<Float>(2.5, 1.8, -2.05)
+        content.add(halo)
+
+        // 3 nubes
+        let cloudConfigs: [(SIMD3<Float>, Float)] = [
+            (SIMD3<Float>(-3.0, 1.5, -1.5), 1.0),
+            (SIMD3<Float>(0.5, 1.8, -1.8), 1.2),
+            (SIMD3<Float>(2.8, 1.4, -1.6), 0.85)
+        ]
+        for (i, (pos, scale)) in cloudConfigs.enumerated() {
+            let cloud = makeCloud()
+            cloud.name = "cloud-\(i)"
+            cloud.scale = SIMD3<Float>(repeating: scale)
+            cloud.position = pos
+            content.add(cloud)
+            startContinuousDrift(cloud, speed: 0.15, range: 8.0)
+        }
+
+        // 5 hojas al viento — diferentes alturas y velocidades
+        for i in 0..<5 {
+            let leaf = ModelEntity(
+                mesh: MeshResource.generateSphere(radius: 0.02),
+                materials: [pbr(color: .limeSpark, roughness: 0.5)]
+            )
+            leaf.scale = SIMD3<Float>(1.6, 0.4, 1.6)
+            leaf.position = SIMD3<Float>(
+                -4.5 + Float(i) * 0.5,
+                0.7 + Float(i) * 0.18,
+                Float.random(in: -0.5...0.5)
+            )
+            content.add(leaf)
+            startWindDrift(leaf, range: 9.0, speed: 0.6 + Float(i) * 0.1, delay: Double(i) * 1.1)
+        }
+    }
+
+    /// Nube: cluster de 3 spheres cream para look puffy.
+    static func makeCloud() -> Entity {
+        let root = Entity()
+        let mat = pbr(color: .cream, roughness: 0.95)
+        let configs: [(SIMD3<Float>, Float)] = [
+            (SIMD3<Float>(-0.10, 0.00, 0.00), 1.0),
+            (SIMD3<Float>( 0.10, 0.04, 0.00), 1.2),
+            (SIMD3<Float>( 0.00,-0.02, 0.06), 0.85),
+            (SIMD3<Float>(-0.06, 0.02, -0.04), 0.9)
+        ]
+        for (pos, scale) in configs {
+            let puff = ModelEntity(
+                mesh: MeshResource.generateSphere(radius: 0.12),
+                materials: [mat]
+            )
+            puff.scale = SIMD3<Float>(repeating: scale)
+            puff.position = pos
+            root.addChild(puff)
+        }
+        return root
+    }
+
+    /// Drift horizontal continuo: sube X linealmente, cuando termina resetea
+    /// del otro lado para loop infinito.
+    static func startContinuousDrift(_ entity: Entity, speed: Float, range: Float) {
+        let endX = entity.position.x + range
+        let target = Transform(
+            scale: entity.scale,
+            rotation: entity.transform.rotation,
+            translation: SIMD3<Float>(endX, entity.position.y, entity.position.z)
+        )
+        let duration = TimeInterval(range / speed)
+        entity.move(to: target, relativeTo: entity.parent, duration: duration, timingFunction: AnimationTimingFunction.linear)
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + duration) { [weak entity] in
+            guard let entity else { return }
+            // Reset a la izquierda
+            entity.position = SIMD3<Float>(entity.position.x - range * 2, entity.position.y, entity.position.z)
+            startContinuousDrift(entity, speed: speed, range: range)
+        }
+    }
+
+    /// Hoja al viento: cruza X con leve oscilación Y, luego resetea.
+    static func startWindDrift(_ entity: Entity, range: Float, speed: Float, delay: TimeInterval = 0) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak entity] in
+            guard let entity else { return }
+            let endX = entity.position.x + range
+            let endY = entity.position.y + Float.random(in: -0.15...0.15)
+            let endZ = entity.position.z + Float.random(in: -0.3...0.3)
+            let target = Transform(
+                scale: entity.scale,
+                rotation: simd_quatf(angle: Float.random(in: 0...(2 * .pi)), axis: SIMD3<Float>(0, 1, 0)),
+                translation: SIMD3<Float>(endX, endY, endZ)
+            )
+            let duration = TimeInterval(range / speed)
+            entity.move(to: target, relativeTo: entity.parent, duration: duration, timingFunction: AnimationTimingFunction.linear)
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + duration) { [weak entity] in
+                guard let entity else { return }
+                // Reset a la izquierda
+                entity.position = SIMD3<Float>(
+                    entity.position.x - range * 2,
+                    Float.random(in: 0.6...1.5),
+                    Float.random(in: -0.5...0.5)
+                )
+                startWindDrift(entity, range: range, speed: speed)
+            }
+        }
     }
 
     /// Poste de luz: tronco metálico delgado + cabeza con bombilla.
