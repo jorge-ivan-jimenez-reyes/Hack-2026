@@ -435,6 +435,9 @@ enum JourneyBuilders {
         // Flip 180° en Y — la cabina ahora mira en dirección de movimiento (+X)
         root.orientation = simd_quatf(angle: .pi, axis: SIMD3<Float>(0, 1, 0))
 
+        // Scale down — el camión ocupaba demasiado, opacaba las stations
+        root.scale = SIMD3<Float>(repeating: 0.62)
+
         return root
     }
 
