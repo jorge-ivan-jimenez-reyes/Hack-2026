@@ -52,6 +52,31 @@ struct RecolectorState {
 }
 
 extension RecolectorState {
+    /// Estado del usuario nuevo — acaba de completar setup, todo en cero.
+    /// Solo el centro más cercano está disponible (lo calculamos por su alcaldía).
+    static let empty = RecolectorState(
+        name: "Jorge",
+        alcaldia: "Roma Norte",
+        streakDays: 0,
+        stage: .onboardingPending,
+        currentBucketProgress: 0,
+        bucketsCompleted: 0,
+        serviceMode: .dropOff,
+        nextPickupDate: nil,
+        nearestCenter: NearestCenter(
+            name: "Composta Roma Norte",
+            distanceKm: 0.4,
+            nextOpeningDate: Calendar.current.date(byAdding: .day, value: 1, to: .now) ?? .now
+        ),
+        totalKgDiverted: 0,
+        co2SavedKg: 0,
+        cuadraKgWeek: 0,
+        cuadraRankPercentile: 100,
+        cuadraPremioGoalKg: 400,
+        coachTip: "Acabas de empezar. Tu primera cubeta será la más importante — separa todo lo orgánico (cáscaras, café, restos de comida sin lácteos ni cítricos)."
+    )
+
+    /// Estado de demo — para presentaciones / pitch. Usuario "avanzado".
     static let mock = RecolectorState(
         name: "Jorge",
         alcaldia: "Roma Norte",

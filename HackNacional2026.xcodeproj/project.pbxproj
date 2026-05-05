@@ -39,6 +39,7 @@
 		4092A10C0C381EA5096FAE3A /* ScanRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 680C5CDE499B044FCC2D8907 /* ScanRecord.swift */; };
 		4214D006D18738F6F5411874 /* Typography.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5581836293530F268356C372 /* Typography.swift */; };
 		421CC5765D412011FB6BA938 /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3752380463A68E07F338307 /* HistoryView.swift */; };
+		42CDC467AFC16A1EF406E596 /* InfoSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A2991A3F563865BB6A5C890 /* InfoSheet.swift */; };
 		4320C7B4A1522255E971025B /* JourneyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 609D813CF6BA290A9D67DCD0 /* JourneyView.swift */; };
 		4768FA0857B1B465787C0559 /* LightSweep.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AF06DAF28304F4E8BB3034 /* LightSweep.swift */; };
 		48C0A56673A8E50A7A536BAB /* InfoCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FB1C7BB26E81EA4953EE1E1 /* InfoCard.swift */; };
@@ -142,6 +143,7 @@
 		872E6F06C4C0633906464B9F /* OnboardingPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPageView.swift; sourceTree = "<group>"; };
 		876A7D90F8B912865E5CD4AA /* RecycleHero.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecycleHero.swift; sourceTree = "<group>"; };
 		87E477014B203000A47471FC /* BucketCommunityOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BucketCommunityOverlay.swift; sourceTree = "<group>"; };
+		8A2991A3F563865BB6A5C890 /* InfoSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoSheet.swift; sourceTree = "<group>"; };
 		903E864CEAB049F4D354C848 /* CuadraCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CuadraCard.swift; sourceTree = "<group>"; };
 		90775B356B9A9D060D6BBE92 /* MockWasteClassifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockWasteClassifier.swift; sourceTree = "<group>"; };
 		92B29817C9FEC0B8DE46EAE9 /* ScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScannerView.swift; sourceTree = "<group>"; };
@@ -368,6 +370,7 @@
 				F0E6B5E3B93166B536C77C42 /* HeroCubetaCard.swift */,
 				0051D1AC2730DA16B1AF217D /* HomeHeader.swift */,
 				7DBE8548FAD3BFA305747D21 /* ImpactRow.swift */,
+				8A2991A3F563865BB6A5C890 /* InfoSheet.swift */,
 				687BDACE27AEAE48E2B92B3E /* ScanFAB.swift */,
 			);
 			path = Components;
@@ -710,6 +713,7 @@
 				1FC5603E84EB79316BAA4887 /* HomeView.swift in Sources */,
 				6822321E1B9CB5A988F421D5 /* ImpactRow.swift in Sources */,
 				48C0A56673A8E50A7A536BAB /* InfoCard.swift in Sources */,
+				42CDC467AFC16A1EF406E596 /* InfoSheet.swift in Sources */,
 				809374E0D363F220531A1C86 /* JourneyData.swift in Sources */,
 				02B798CC89EB5054DFBB95D9 /* JourneyScene.swift in Sources */,
 				4320C7B4A1522255E971025B /* JourneyView.swift in Sources */,
