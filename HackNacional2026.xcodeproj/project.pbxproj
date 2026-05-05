@@ -40,6 +40,7 @@
 		4C72B7D4BD400F14B010D55D /* CoachView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A102F23D916BB30EFAD32881 /* CoachView.swift */; };
 		4CFCC837BEB15745FE0AA4B1 /* CoachState.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD40837AAF2A8230D1E7F59B /* CoachState.swift */; };
 		51C2B49CA63186BF6940B8D2 /* OnboardingPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 045AC3B319FD9B1D042A3F7D /* OnboardingPage.swift */; };
+		558ABAB466E7867D98573C2B /* ChangeModalitySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59630488B69B66EBB5FD640D /* ChangeModalitySheet.swift */; };
 		6822321E1B9CB5A988F421D5 /* ImpactRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DBE8548FAD3BFA305747D21 /* ImpactRow.swift */; };
 		6BA9DB56FC934D1C05C8583D /* CuadraCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 903E864CEAB049F4D354C848 /* CuadraCard.swift */; };
 		6C9ACD9DC60EE30BB8423913 /* ScannerCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ABBF7D618507403BE181C52 /* ScannerCoordinator.swift */; };
@@ -54,6 +55,7 @@
 		9EC4FADA62C3E6F7EBCAEEB4 /* CentroSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9616E308659875D28E5CACFD /* CentroSetupView.swift */; };
 		9EE955AC2D35CB74D17E2F3F /* MeshBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = A21A7A4D62E06692ABBE0A64 /* MeshBackground.swift */; };
 		A058A9BC52CEA59EC9BFE88A /* HackNacional2026App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DEECA49939573B81D79CA4A /* HackNacional2026App.swift */; };
+		A37B1D596365280531EF7ECA /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C670B076780D26BE7E49F84B /* SettingsView.swift */; };
 		A58DB54A7B6B8DB18789D0F8 /* CubetaTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9226AE1DF0D85ECF504800B /* CubetaTracker.swift */; };
 		A8D4BEE324999CC1E4DB3B87 /* ProfileSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A95E6AFF910E6A8F7C423F0C /* ProfileSelectionView.swift */; };
 		B2CFDD5B1921AF5571F33D50 /* RecolectorState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9355253958F455AEC1AA8D6 /* RecolectorState.swift */; };
@@ -108,6 +110,7 @@
 		539579FF5B70758C51506E6D /* Classification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Classification.swift; sourceTree = "<group>"; };
 		53999F24AFCB0A610EFBD7BC /* QuizCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuizCard.swift; sourceTree = "<group>"; };
 		5581836293530F268356C372 /* Typography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Typography.swift; sourceTree = "<group>"; };
+		59630488B69B66EBB5FD640D /* ChangeModalitySheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangeModalitySheet.swift; sourceTree = "<group>"; };
 		5F8BD3F6483561B05A23C8FC /* ConfettiView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfettiView.swift; sourceTree = "<group>"; };
 		62162D079329EB9BA65BDD94 /* CoachTipCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoachTipCard.swift; sourceTree = "<group>"; };
 		62BEE24D874DC0097059A623 /* RecolectorSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecolectorSetupView.swift; sourceTree = "<group>"; };
@@ -115,7 +118,7 @@
 		687BDACE27AEAE48E2B92B3E /* ScanFAB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanFAB.swift; sourceTree = "<group>"; };
 		6BEDA8E2A04F5F1BB4215A7E /* CategoryCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryCard.swift; sourceTree = "<group>"; };
 		74BA98292636ED074C8AAE4D /* BucketPickupOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BucketPickupOverlay.swift; sourceTree = "<group>"; };
-		75C200CB290ACEB718BAD6C7 /* HackNacional2026.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HackNacional2026.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		75C200CB290ACEB718BAD6C7 /* HackNacional2026.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = HackNacional2026.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7DBE8548FAD3BFA305747D21 /* ImpactRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImpactRow.swift; sourceTree = "<group>"; };
 		805E35C7641160677241DA8E /* Haptics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Haptics.swift; sourceTree = "<group>"; };
 		80F74F5C910CBD9927857F36 /* UserRole.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserRole.swift; sourceTree = "<group>"; };
@@ -141,6 +144,7 @@
 		BE41A5F3657705294D698CD1 /* RecolectoresListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecolectoresListView.swift; sourceTree = "<group>"; };
 		C438F57E4F1FEA6FCC3714F5 /* CenterLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CenterLocation.swift; sourceTree = "<group>"; };
 		C45CD986FF2AE088D599F442 /* PageIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageIndicator.swift; sourceTree = "<group>"; };
+		C670B076780D26BE7E49F84B /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		C9355253958F455AEC1AA8D6 /* RecolectorState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecolectorState.swift; sourceTree = "<group>"; };
 		C99CCC37B05406BB4AAD46EA /* ReportesListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportesListView.swift; sourceTree = "<group>"; };
 		D4046254A561F7B74CF090C7 /* PrimaryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimaryButton.swift; sourceTree = "<group>"; };
@@ -292,6 +296,7 @@
 				8559B5542EBD6E0377515F65 /* RecolectorSetup */,
 				3FAF41AB16CB3CB177F5DEEE /* RecyclingGuide */,
 				F26858F7E0FD92B152BDDB69 /* Scanner */,
+				FB2B4162A7AB7EB3C2EAE67C /* Settings */,
 			);
 			path = Features;
 			sourceTree = "<group>";
@@ -539,6 +544,15 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
+		FB2B4162A7AB7EB3C2EAE67C /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				59630488B69B66EBB5FD640D /* ChangeModalitySheet.swift */,
+				C670B076780D26BE7E49F84B /* SettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -629,6 +643,7 @@
 				3F4426B92C8F382F74B9C3F8 /* CenterMapView.swift in Sources */,
 				4BF00217C295C5A63FE6F445 /* CentroHomeView.swift in Sources */,
 				9EC4FADA62C3E6F7EBCAEEB4 /* CentroSetupView.swift in Sources */,
+				558ABAB466E7867D98573C2B /* ChangeModalitySheet.swift in Sources */,
 				BB250BED8C76CE5D1073947A /* Classification.swift in Sources */,
 				4CFCC837BEB15745FE0AA4B1 /* CoachState.swift in Sources */,
 				F6AECD8EB36894AD53A64E8E /* CoachTipCard.swift in Sources */,
@@ -676,6 +691,7 @@
 				4092A10C0C381EA5096FAE3A /* ScanRecord.swift in Sources */,
 				6C9ACD9DC60EE30BB8423913 /* ScannerCoordinator.swift in Sources */,
 				756C302B9D03803F71A76C33 /* ScannerView.swift in Sources */,
+				A37B1D596365280531EF7ECA /* SettingsView.swift in Sources */,
 				047E8B33BD5436180316C33F /* Theme.swift in Sources */,
 				4214D006D18738F6F5411874 /* Typography.swift in Sources */,
 				BCB8287EDC5CAA523E3C91B4 /* USDZHero.swift in Sources */,
@@ -695,7 +711,6 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = DM6LT3HA8M;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Generated/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
@@ -854,7 +869,6 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = DM6LT3HA8M;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Generated/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;

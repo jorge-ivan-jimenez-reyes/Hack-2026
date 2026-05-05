@@ -7,6 +7,7 @@ struct HomeView: View {
     @State private var state: RecolectorState = .mock
     @State private var showScanner = false
     @State private var showCenterMap = false
+    @State private var showSettings = false
 
     /// Modalidad seleccionada en RecolectorSetup (Q5). Controla qué muestra
     /// el Hero card: pickup en casa vs centro más cercano.
@@ -25,7 +26,8 @@ struct HomeView: View {
                     HomeHeader(
                         name: state.name,
                         alcaldia: state.alcaldia,
-                        streakDays: state.streakDays
+                        streakDays: state.streakDays,
+                        onTapProfile: { showSettings = true }
                     )
 
                     HeroCubetaCard(
@@ -70,6 +72,9 @@ struct HomeView: View {
         }
         .fullScreenCover(isPresented: $showCenterMap) {
             CenterMapView()
+        }
+        .sheet(isPresented: $showSettings) {
+            SettingsView()
         }
     }
 
