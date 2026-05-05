@@ -20,6 +20,14 @@ extension Color {
     static let brand     = Color("brand")
     static let brandSoft = Color("brandSoft")
 
+    // Tierra viva — paleta de identidad (dark theme oriented)
+    static let forestDeep  = Color("forestDeep")
+    static let moss        = Color("moss")
+    static let clay        = Color("clay")
+    static let cream       = Color("cream")
+    static let limeSpark   = Color("limeSpark")
+    static let inkCharcoal = Color("inkCharcoal")
+
     // Waste categories
     static let wasteOrganic    = Color("wasteOrganic")
     static let wastePET        = Color("wastePET")
@@ -44,6 +52,12 @@ extension Color {
 extension ShapeStyle where Self == Color {
     static var brand: Color            { .brand }
     static var brandSoft: Color        { .brandSoft }
+    static var forestDeep: Color       { .forestDeep }
+    static var moss: Color             { .moss }
+    static var clay: Color             { .clay }
+    static var cream: Color            { .cream }
+    static var limeSpark: Color        { .limeSpark }
+    static var inkCharcoal: Color      { .inkCharcoal }
     static var success: Color          { .success }
     static var warning: Color          { .warning }
     static var danger: Color           { .danger }

@@ -1,83 +1,199 @@
 import SwiftUI
 
+/// Flujo de onboarding paginado. Coordina las páginas y el CTA, pero NO
+/// renderiza el contenido de cada página — eso vive en `OnboardingPageView`.
+///
+/// Disparar `onContinue` cierra el onboarding (lo decide `RootView` via
+/// `@AppStorage("didOnboard")`).
 struct OnboardingView: View {
     let onContinue: () -> Void
 
-    @State private var appeared = false
+    @State private var index = 0
+    @State private var dragTilt: CGSize = .zero
+
+    private let pages = OnboardingPage.all
+
+    private var isLast: Bool { index == pages.count - 1 }
+    private var currentAccent: Color { pages[index].accent }
 
     var body: some View {
         ZStack {
-            MeshBackground()
-                .opacity(0.4)
-                .ignoresSafeArea()
+            background
 
-            VStack(spacing: Spacing.xl) {
-                Spacer()
+            VStack(spacing: 0) {
+                topBar
+                pagesTabView
+                footer
+            }
 
-                LottiePlayer(name: "onboarding-leaf", fallbackSymbol: "leaf.circle.fill")
-                    .foregroundStyle(.brand)
-                    .frame(width: 160, height: 160)
-                    .accessibilityHidden(true)
-                    .scaleEffect(appeared ? 1 : 0.6)
-                    .opacity(appeared ? 1 : 0)
-                    .animation(AppAnimation.bouncy, value: appeared)
+            // Capa fija ENCIMA del TabView con la cubeta + overlay storytelling.
+            // Render UNA vez (no por página) — solución al "tarda en cargar"
+            // problema de RealityView reinstanciándose.
+            sharedHeroLayer
+                .allowsHitTesting(false)
+        }
+        .preferredColorScheme(.light)
+    }
 
-                VStack(spacing: Spacing.s) {
-                    Text("Bienvenido")
-                        .font(.appLargeTitle)
-                    Text("Identifica residuos y aprende a reducirlos, todo desde tu iPhone.")
-                        .font(.appBody)
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
+    /// Cubeta 3D compartida + overlay storytelling de la página activa.
+    /// Posicionada para alinearse con el área superior del TabView.
+    private var sharedHeroLayer: some View {
+        VStack(spacing: 0) {
+            Color.clear.frame(height: 100)  // espacio para topBar + offset
+
+            ZStack {
+                ProceduralBucketHero(accent: currentAccent, tilt: dragTilt)
+                    .frame(width: 340, height: 340)
+
+                storyOverlay
+                    .frame(width: 340, height: 340)
+            }
+            .animation(.smooth(duration: 0.55, extraBounce: 0.05), value: index)
+
+            Spacer(minLength: 0)
+        }
+    }
+
+    /// Overlay storytelling de la página activa — switch por index.
+    @ViewBuilder
+    private var storyOverlay: some View {
+        switch index {
+        case 0: BucketFillingOverlay(accent: currentAccent)
+        case 1: BucketPickupOverlay(accent: currentAccent)
+        case 2: BucketTransformOverlay(accent: currentAccent)
+        case 3: BucketCommunityOverlay(accent: currentAccent)
+        default: EmptyView()
+        }
+    }
+
+    private var pagesTabView: some View {
+        TabView(selection: $index) {
+            ForEach(pages) { page in
+                pageView(for: page)
+            }
+        }
+        .tabViewStyle(.page(indexDisplayMode: .never))
+        .animation(AppAnimation.smooth, value: index)
+        .simultaneousGesture(parallaxDrag)
+    }
+
+    @ViewBuilder
+    private func pageView(for page: OnboardingPage) -> some View {
+        let isActive = (page.id == index)
+        OnboardingPageView(page: page, isActive: isActive)
+            .tag(page.id)
+            .padding(.horizontal, Spacing.l)
+    }
+
+    /// Drag que tilt-ea el hero (parallax 3D). Va en `simultaneousGesture` para
+    /// no robar el swipe del TabView (que cambia de página).
+    private var parallaxDrag: some Gesture {
+        DragGesture(minimumDistance: 0)
+            .onChanged { value in
+                let tx = max(-60, min(60, value.translation.width))
+                let ty = max(-40, min(40, value.translation.height))
+                dragTilt = CGSize(width: tx, height: ty)
+            }
+            .onEnded { _ in
+                withAnimation(.spring(response: 0.55, dampingFraction: 0.75)) {
+                    dragTilt = .zero
                 }
-                .padding(.horizontal, Spacing.l)
-                .opacity(appeared ? 1 : 0)
-                .offset(y: appeared ? 0 : 16)
-                .animation(AppAnimation.entrance.delay(0.1), value: appeared)
+            }
+    }
 
-                VStack(alignment: .leading, spacing: Spacing.l) {
-                    pill(icon: "camera.fill",   title: "Escanea con la cámara",  subtitle: "Identifica residuos al instante.",        index: 0)
-                    pill(icon: "lock.shield",   title: "100% privado",            subtitle: "Tus fotos nunca salen del dispositivo.",  index: 1)
-                    pill(icon: "sparkles",      title: "Coach con IA on-device",  subtitle: "Tips personalizados sin conexión.",       index: 2)
-                    pill(icon: "accessibility", title: "Diseñado para todos",     subtitle: "VoiceOver, texto dinámico, alto contraste.", index: 3)
+    // MARK: - Sections
+
+    /// Fondo blanco-cream dominante con un susurro de verde — el accent
+    /// de la página activa solo aparece como tint sutil (5-8% opacity).
+    /// Casi imperceptible pero da "vida" sin saturar. Apple Health DNA.
+    private var background: some View {
+        ZStack {
+            backgroundBase
+            backgroundMesh
+        }
+    }
+
+    private var backgroundBase: some View {
+        Color.cream.ignoresSafeArea()
+    }
+
+    private var backgroundMesh: some View {
+        MeshBackground(colors: meshColors, speed: 0.06)
+            .ignoresSafeArea()
+            .opacity(0.55)
+            .animation(.smooth(duration: 0.8, extraBounce: 0.05), value: index)
+    }
+
+    private var meshColors: [Color] {
+        let accent = currentAccent.opacity(0.07)
+        let cream = Color.cream
+        let brandSoft = Color.brand.opacity(0.05)
+        return [
+            cream,    accent,   cream,
+            brandSoft, cream,   accent,
+            cream,    brandSoft, cream
+        ]
+    }
+
+    private var topBar: some View {
+        HStack {
+            Spacer()
+            if !isLast {
+                Button {
+                    Haptics.tap()
+                    onContinue()
+                } label: {
+                    Text("Saltar")
+                        .font(.appCallout.weight(.medium))
+                        .foregroundStyle(.inkCharcoal.opacity(0.65))
+                        .padding(.horizontal, Spacing.m)
+                        .padding(.vertical, Spacing.s)
+                        .glassEffect(.regular.tint(.inkCharcoal.opacity(0.05)).interactive(), in: .capsule)
                 }
-                .padding(.horizontal, Spacing.l)
+                .accessibilityHint("Omite el onboarding")
+            }
+        }
+        .padding(.horizontal, Spacing.l)
+        .padding(.top, Spacing.s)
+        .frame(height: 44)
+    }
 
-                Spacer()
+    private var footer: some View {
+        VStack(spacing: Spacing.l) {
+            PageIndicator(count: pages.count, current: index, tint: .brand)
 
-                PrimaryButton("Empezar", systemImage: "arrow.right.circle.fill") {
+            Button {
+                if isLast {
                     Haptics.confirm()
                     onContinue()
+                } else {
+                    Haptics.tap()
+                    withAnimation(.smooth(duration: 0.55, extraBounce: 0.05)) {
+                        index += 1
+                    }
                 }
+            } label: {
+                HStack(spacing: Spacing.s) {
+                    Text(isLast ? "Empezar" : "Continuar")
+                        .font(.appHeadline.weight(.semibold))
+                    Image(systemName: isLast ? "arrow.right.circle.fill" : "arrow.right")
+                }
+                .foregroundStyle(.cream)
+                .frame(maxWidth: .infinity, minHeight: 52)
                 .padding(.horizontal, Spacing.l)
-                .padding(.bottom, Spacing.l)
-                .opacity(appeared ? 1 : 0)
-                .offset(y: appeared ? 0 : 12)
-                .animation(AppAnimation.entrance.delay(0.55), value: appeared)
+                .glassEffect(
+                    .regular.tint(Color.brand.opacity(0.95)).interactive(),
+                    in: .capsule
+                )
+                .shadow(color: Color.brand.opacity(0.20), radius: 16, y: 6)
             }
+            .accessibilityLabel(isLast ? "Empezar a usar la app" : "Continuar al siguiente paso")
         }
-        .background(Color.surface)
-        .onAppear { appeared = true }
-    }
-
-    private func pill(icon: String, title: String, subtitle: String, index: Int) -> some View {
-        HStack(spacing: Spacing.m) {
-            Image(systemName: icon)
-                .font(.title3)
-                .foregroundStyle(.brand)
-                .frame(width: 44, height: 44)
-                .background(Color.brandSoft.opacity(0.4), in: .circle)
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title).font(.appHeadline)
-                Text(subtitle).font(.appCallout).foregroundStyle(.secondary)
-            }
-        }
-        .accessibleCard(label: "\(title). \(subtitle)")
-        .opacity(appeared ? 1 : 0)
-        .offset(x: appeared ? 0 : -24)
-        .animation(AppAnimation.stagger(index: index), value: appeared)
+        .padding(.horizontal, Spacing.l)
+        .padding(.bottom, Spacing.l)
     }
 }
+
 
 #Preview {
     OnboardingView(onContinue: {})
