@@ -35,6 +35,7 @@
 		303E25C7F90E54A3061AFD1A /* BatchHealthAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 029C9E004AF1449D15F65580 /* BatchHealthAnalyzer.swift */; };
 		30981D2C6FAAB72B7AD673DE /* Reporte.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0595C21A1D06FD2C1A9003 /* Reporte.swift */; };
 		30FDE06AC763E2D9ED3AC931 /* QuizCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53999F24AFCB0A610EFBD7BC /* QuizCard.swift */; };
+		373B1064DD08A7B45683FA82 /* CentroSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D911C3657E7E5E6CDC6F8C55 /* CentroSettingsView.swift */; };
 		37406643E3DC604FCDE255D8 /* ReportesListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C99CCC37B05406BB4AAD46EA /* ReportesListView.swift */; };
 		3C37A533E43E7DC1BA43BB7A /* AccessibilityModifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C06C17A969AF7EED81FEFBC /* AccessibilityModifiers.swift */; };
 		3F4426B92C8F382F74B9C3F8 /* CenterMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06AABC7CBB26B3AAE28D86B1 /* CenterMapView.swift */; };
@@ -180,6 +181,7 @@
 		C99CCC37B05406BB4AAD46EA /* ReportesListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportesListView.swift; sourceTree = "<group>"; };
 		CA23AB26C3EEF20FA764EA47 /* JourneyData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JourneyData.swift; sourceTree = "<group>"; };
 		D4046254A561F7B74CF090C7 /* PrimaryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimaryButton.swift; sourceTree = "<group>"; };
+		D911C3657E7E5E6CDC6F8C55 /* CentroSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CentroSettingsView.swift; sourceTree = "<group>"; };
 		D9226AE1DF0D85ECF504800B /* CubetaTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CubetaTracker.swift; sourceTree = "<group>"; };
 		DD40837AAF2A8230D1E7F59B /* CoachState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoachState.swift; sourceTree = "<group>"; };
 		DD6DB4CCB027FF961146D336 /* CompostBatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompostBatch.swift; sourceTree = "<group>"; };
@@ -630,6 +632,7 @@
 		FB2B4162A7AB7EB3C2EAE67C /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				D911C3657E7E5E6CDC6F8C55 /* CentroSettingsView.swift */,
 				59630488B69B66EBB5FD640D /* ChangeModalitySheet.swift */,
 				C670B076780D26BE7E49F84B /* SettingsView.swift */,
 			);
@@ -728,6 +731,7 @@
 				1EABB35C67831FC3BAFB74D9 /* CenterLocation.swift in Sources */,
 				3F4426B92C8F382F74B9C3F8 /* CenterMapView.swift in Sources */,
 				4BF00217C295C5A63FE6F445 /* CentroHomeView.swift in Sources */,
+				373B1064DD08A7B45683FA82 /* CentroSettingsView.swift in Sources */,
 				9EC4FADA62C3E6F7EBCAEEB4 /* CentroSetupView.swift in Sources */,
 				558ABAB466E7867D98573C2B /* ChangeModalitySheet.swift in Sources */,
 				BB250BED8C76CE5D1073947A /* Classification.swift in Sources */,

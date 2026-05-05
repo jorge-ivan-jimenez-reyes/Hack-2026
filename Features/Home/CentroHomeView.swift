@@ -8,6 +8,7 @@ struct CentroHomeView: View {
     @AppStorage("centro.name") private var centroName = "Centro Roma Norte"
 
     @State private var showWrapped = false
+    @State private var showSettings = false
 
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
@@ -32,6 +33,9 @@ struct CentroHomeView: View {
         }
         .fullScreenCover(isPresented: $showWrapped) {
             WrappedView(data: .mock)
+        }
+        .sheet(isPresented: $showSettings) {
+            CentroSettingsView()
         }
     }
 
@@ -86,6 +90,16 @@ struct CentroHomeView: View {
     // MARK: - Sections
 
     private var header: some View {
+        Button {
+            Haptics.tap()
+            showSettings = true
+        } label: {
+            headerContent
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var headerContent: some View {
         HStack(alignment: .top) {
             VStack(alignment: .leading, spacing: 2) {
                 Text(centroName.isEmpty ? "Centro de acopio" : centroName)
