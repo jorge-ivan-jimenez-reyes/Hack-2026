@@ -97,10 +97,10 @@ struct CentroTabView: View {
                 CentroHomeView()
             }
             Tab("Recolectores", systemImage: "person.3.fill") {
-                PlaceholderView(title: "Recolectores", subtitle: "Lista de tus recolectores activos. (Próximamente)")
+                RecolectoresListView()
             }
             Tab("Reportes", systemImage: "exclamationmark.bubble.fill") {
-                PlaceholderView(title: "Reportes", subtitle: "Atiende lo que ciudadanos reportan. (Próximamente)")
+                ReportesListView()
             }
         }
         .tabBarMinimizeBehavior(.onScrollDown)
