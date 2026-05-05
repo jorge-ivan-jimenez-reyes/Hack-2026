@@ -31,6 +31,9 @@ struct OnboardingView: View {
             // problema de RealityView reinstanciándose.
             sharedHeroLayer
                 .allowsHitTesting(false)
+
+            // Color flash global al cambiar de página (200ms total, sin blur)
+            pageFlashLayer
         }
         .preferredColorScheme(.light)
     }
@@ -42,26 +45,23 @@ struct OnboardingView: View {
             Color.clear.frame(height: 100)  // espacio para topBar + offset
 
             ZStack {
-                // Light sweep — onda de luz radial detrás del hero
-                LightSweep(trigger: index, color: currentAccent)
-
-                // Hero PERSISTENTE — no se re-renderiza al cambiar página,
-                // solo pulsa y cambia material. Esto elimina el "snap" jarring.
+                // Hero PERSISTENTE — RealityView se queda, solo accent cambia
                 heroForCurrentPage
                     .frame(width: 340, height: 340)
                     .heroPulse(trigger: index)
 
                 storyOverlay
                     .frame(width: 340, height: 340)
-
-                // Sparkles sutiles — solo 5 con timing más suave
-                PageChangeBurst(trigger: index, color: currentAccent)
-                    .frame(width: 340, height: 340)
             }
-            .animation(.smooth(duration: 0.6, extraBounce: 0.05), value: index)
 
             Spacer(minLength: 0)
         }
+    }
+
+    /// Color flash cubre toda la pantalla — fuera del heroLayer para que sea
+    /// global. Performance: un solo Color overlay con opacity fade, sin blur.
+    private var pageFlashLayer: some View {
+        LightSweep(trigger: index, color: currentAccent)
     }
 
     /// Hero compartido. NO se re-instancia al cambiar de página — solo

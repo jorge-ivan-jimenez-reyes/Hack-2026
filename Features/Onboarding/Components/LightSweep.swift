@@ -1,49 +1,47 @@
 import SwiftUI
 
-/// Onda de luz radial que se expande desde el centro al cambiar página.
-/// Apple Watch / Liquid Glass style — un anillo de color que se infla y desvanece.
-/// Da el "wow" del cambio sin romper la continuidad del hero.
+/// Color flash sutil que aparece UNA vez por cambio de página.
+/// Reemplaza el LightSweep blur-heavy anterior. **Performance-friendly**:
+/// solo un color plano con opacity fade, sin blur ni shapes grandes.
+///
+/// 200ms total: 80ms fade-in 18% opacity → 120ms fade-out a 0.
+/// Da el "wow" del cambio sin tirar frames.
 struct LightSweep: View {
     let trigger: Int
-    var color: Color = .limeSpark
+    var color: Color = .brand
 
-    @State private var radius: CGFloat = 60
     @State private var opacity: Double = 0
     @State private var lastTrigger: Int = -1
 
     var body: some View {
-        Circle()
-            .stroke(color, lineWidth: 80)
-            .frame(width: radius, height: radius)
+        color
             .opacity(opacity)
-            .blur(radius: 36)
-            .blendMode(.plusLighter)
+            .ignoresSafeArea()
             .allowsHitTesting(false)
+            .blendMode(.plusLighter)
             .onChange(of: trigger) { _, new in
                 guard new != lastTrigger else { return }
                 lastTrigger = new
-                fire()
+                flash()
             }
             .onAppear {
                 lastTrigger = trigger
             }
     }
 
-    private func fire() {
-        // Reset al estado inicial
-        radius = 60
-        opacity = 0.85
-
-        // Expand + fade — 0.9s smooth
-        withAnimation(.smooth(duration: 0.9)) {
-            radius = 1100
-            opacity = 0
+    private func flash() {
+        withAnimation(.easeOut(duration: 0.10)) {
+            opacity = 0.16
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.10) {
+            withAnimation(.easeIn(duration: 0.22)) {
+                opacity = 0
+            }
         }
     }
 }
 
-/// Pulse sutil del hero al cambiar página — scale 1.0 → 1.06 → 1.0 con bounce.
-/// Tied al mismo trigger que LightSweep para que se sientan UNO.
+/// Pulse sutil del hero al cambiar página — mantenido pero más ligero.
 struct HeroPulse: ViewModifier {
     let trigger: Int
 
@@ -58,11 +56,11 @@ struct HeroPulse: ViewModifier {
     }
 
     private func pulse() {
-        withAnimation(.spring(response: 0.30, dampingFraction: 0.55)) {
-            scale = 1.06
+        withAnimation(.spring(response: 0.25, dampingFraction: 0.65)) {
+            scale = 1.04
         }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.30) {
-            withAnimation(.spring(response: 0.45, dampingFraction: 0.70)) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+            withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
                 scale = 1.0
             }
         }
