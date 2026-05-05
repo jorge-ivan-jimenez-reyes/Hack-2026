@@ -201,19 +201,11 @@ struct ReportesListView: View {
     }
 
     private var emptyState: some View {
-        VStack(spacing: Spacing.s) {
-            Image(systemName: "checkmark.circle.fill")
-                .font(.system(size: 40))
-                .foregroundStyle(.brand)
-            Text("Todo en orden")
-                .font(.appHeadline.weight(.semibold))
-                .foregroundStyle(.inkCharcoal)
-            Text("Sin reportes pendientes en este filtro.")
-                .font(.appCallout)
-                .foregroundStyle(.inkCharcoal.opacity(0.65))
-        }
-        .frame(maxWidth: .infinity)
-        .padding(Spacing.xl)
+        EmptyStateView(
+            icon: "checkmark.circle.fill",
+            title: "Todo en orden",
+            subtitle: "Sin reportes pendientes en este filtro. Buen trabajo."
+        )
     }
 
     // MARK: - Detail sheet

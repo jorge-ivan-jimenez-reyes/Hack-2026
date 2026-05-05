@@ -24,12 +24,12 @@ final class ScannerCoordinator {
 
     init(
         camera: CameraService = CameraService(),
-        classifier: WasteClassifier = MockWasteClassifier(),
-        coach: LanguageCoach = MockLanguageCoach()
+        classifier: WasteClassifier? = nil,
+        coach: LanguageCoach? = nil
     ) {
         self.camera = camera
-        self.classifier = classifier
-        self.coach = coach
+        self.classifier = classifier ?? AIServices.defaultClassifier()
+        self.coach = coach ?? AIServices.defaultCoach()
     }
 
     func startCamera() async { await camera.start() }

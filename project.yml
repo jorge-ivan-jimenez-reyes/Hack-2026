@@ -40,6 +40,7 @@ targets:
     dependencies:
       - package: Lottie
         product: Lottie
+      - target: HackNacional2026Widgets
 
     sources:
       - path: App
@@ -49,6 +50,9 @@ targets:
         excludes:
           - "**/*.md"
       - path: Features
+        excludes:
+          - "**/*.md"
+      - path: Shared
         excludes:
           - "**/*.md"
       - path: Resources/Assets.xcassets
@@ -90,6 +94,39 @@ targets:
         IPHONEOS_DEPLOYMENT_TARGET: "26.0"
         SUPPORTS_MACCATALYST: NO
         SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: NO
+        INFOPLIST_KEY_NSSupportsLiveActivities: YES
+
+  HackNacional2026Widgets:
+    type: app-extension
+    platform: iOS
+    deploymentTarget: "26.0"
+
+    sources:
+      - path: Widgets
+        excludes:
+          - "**/*.md"
+      - path: Shared
+        excludes:
+          - "**/*.md"
+
+    info:
+      path: Generated/WidgetsInfo.plist
+      properties:
+        CFBundleDisplayName: HackNacional Widgets
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: mx.up.ioslab.hacknacional2026.widgets
+        PRODUCT_NAME: $(TARGET_NAME)
+        TARGETED_DEVICE_FAMILY: "1,2"
+        ENABLE_PREVIEWS: YES
+        SWIFT_EMIT_LOC_STRINGS: YES
+        IPHONEOS_DEPLOYMENT_TARGET: "26.0"
+        SKIP_INSTALL: YES
 
 schemes:
   HackNacional2026:

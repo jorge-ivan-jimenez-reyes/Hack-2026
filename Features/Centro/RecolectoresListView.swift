@@ -219,16 +219,11 @@ struct RecolectoresListView: View {
     }
 
     private var emptyState: some View {
-        VStack(spacing: Spacing.s) {
-            Image(systemName: "person.crop.circle.badge.questionmark")
-                .font(.system(size: 40))
-                .foregroundStyle(.inkCharcoal.opacity(0.35))
-            Text("Nadie por aquí con ese filtro")
-                .font(.appBody)
-                .foregroundStyle(.inkCharcoal.opacity(0.65))
-        }
-        .frame(maxWidth: .infinity)
-        .padding(Spacing.xl)
+        EmptyStateView(
+            icon: "person.crop.circle.badge.questionmark",
+            title: "Sin recolectores con ese filtro",
+            subtitle: "Ajusta los filtros o busca por nombre para ver más resultados."
+        )
     }
 }
 

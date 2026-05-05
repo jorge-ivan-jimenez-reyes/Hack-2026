@@ -12,6 +12,8 @@ struct HomeView: View {
     @State private var showScanner = false
     @State private var showCenterMap = false
     @State private var showSettings = false
+    @State private var showWrapped = false
+    @State private var showSchedule = false
 
     /// InfoSheet activo (uno a la vez). Nil = sin sheet.
     @State private var activeInfo: InfoKind?
@@ -35,6 +37,8 @@ struct HomeView: View {
                         onTapProfile: { showSettings = true }
                     )
 
+                    wrappedTeaser
+
                     Button {
                         Haptics.tap()
                         activeInfo = .cubeta
@@ -46,6 +50,8 @@ struct HomeView: View {
                         )
                     }
                     .buttonStyle(.plain)
+
+                    scheduleShortcut
 
                     Button {
                         Haptics.tap()
@@ -101,19 +107,115 @@ struct HomeView: View {
         .sheet(isPresented: $showSettings) {
             SettingsView()
         }
+        .fullScreenCover(isPresented: $showWrapped) {
+            RecolectorWrappedView(data: .mock)
+        }
+        .sheet(isPresented: $showSchedule) {
+            ScheduleDeliverySheet(
+                mode: resolvedState.serviceMode,
+                nearestCenter: resolvedState.nearestCenter
+            )
+            .presentationDetents([.large])
+        }
         .sheet(item: $activeInfo) { kind in
             kind.sheet
                 .presentationDetents([.medium, .large])
                 .presentationDragIndicator(.visible)
         }
+        .onAppear {
+            WidgetState.sync(
+                bucketProgress: resolvedState.currentBucketProgress,
+                bucketsCompleted: resolvedState.bucketsCompleted,
+                totalKgDiverted: resolvedState.totalKgDiverted
+            )
+        }
+    }
+
+    /// Acceso rápido al flow de programar entrega — disponible sin importar la
+    /// etapa, así el usuario siempre puede agendar (no solo cuando la cubeta
+    /// está al 100%). Aparece como un botón sutil bajo el hero.
+    private var scheduleShortcut: some View {
+        Button {
+            Haptics.tap()
+            showSchedule = true
+        } label: {
+            HStack(spacing: Spacing.s) {
+                Image(systemName: "calendar.badge.plus")
+                    .font(.callout.weight(.semibold))
+                Text(resolvedState.serviceMode == .pickup ? "Programar pickup" : "Programar entrega")
+                    .font(.appCallout.weight(.semibold))
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.caption.weight(.semibold))
+            }
+            .foregroundStyle(.brand)
+            .padding(.horizontal, Spacing.l)
+            .padding(.vertical, Spacing.m)
+            .background {
+                RoundedRectangle(cornerRadius: Radius.l)
+                    .fill(.white)
+                    .shadow(color: Color.inkCharcoal.opacity(0.05), radius: 8, y: 3)
+            }
+        }
+        .buttonStyle(.plain)
+        .padding(.horizontal, Spacing.l)
+    }
+
+    /// Card prominente que invita a ver el wrapped del mes del recolector.
+    private var wrappedTeaser: some View {
+        Button {
+            Haptics.confirm()
+            showWrapped = true
+        } label: {
+            HStack(spacing: Spacing.m) {
+                ZStack {
+                    Circle()
+                        .fill(.white.opacity(0.20))
+                    Image(systemName: "sparkles")
+                        .font(.title2)
+                        .foregroundStyle(.white)
+                        .symbolEffect(.variableColor.iterative.reversing, options: .repeat(.continuous))
+                }
+                .frame(width: 52, height: 52)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Tu mes en composta")
+                        .font(.appHeadline.weight(.bold))
+                        .foregroundStyle(.white)
+                    Text("Mayo 2026 · Mira tu impacto")
+                        .font(.appCaption)
+                        .foregroundStyle(.white.opacity(0.85))
+                }
+
+                Spacer()
+
+                Image(systemName: "play.fill")
+                    .font(.title3)
+                    .foregroundStyle(.white)
+            }
+            .padding(Spacing.l)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background {
+                LinearGradient(
+                    colors: [.brand, .moss, .clay],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            }
+            .clipShape(RoundedRectangle(cornerRadius: Radius.l))
+            .shadow(color: Color.brand.opacity(0.30), radius: 18, y: 6)
+        }
+        .buttonStyle(.plain)
+        .padding(.horizontal, Spacing.l)
     }
 
     private func handleHeroAction() {
         switch state.stage {
         case .bucketReady:
-            break
+            showSchedule = true
         case .abonoReady:
-            break
+            // TODO día del hack: pantalla "recibir abono". Por ahora reusa schedule.
+            showSchedule = true
         default:
             break
         }

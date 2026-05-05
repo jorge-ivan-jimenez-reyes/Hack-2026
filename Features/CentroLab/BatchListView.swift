@@ -137,12 +137,30 @@ struct BatchListView: View {
     }
 
     private var batchList: some View {
-        VStack(spacing: Spacing.s) {
-            ForEach(filtered) { batch in
-                batchRow(batch)
+        Group {
+            if batches.isEmpty {
+                EmptyStateView(
+                    icon: "leaf.arrow.circlepath",
+                    title: "Aún no tienes lotes",
+                    subtitle: "Cuando recibas cubetas, podrás formar lotes y monitorear su salud con el Health Monitor IA."
+                )
+                .padding(.horizontal, Spacing.l)
+            } else if filtered.isEmpty {
+                EmptyStateView(
+                    icon: "line.3.horizontal.decrease.circle",
+                    title: "Sin lotes en este filtro",
+                    subtitle: "Cambia el filtro o espera a que termine la siguiente fase."
+                )
+                .padding(.horizontal, Spacing.l)
+            } else {
+                VStack(spacing: Spacing.s) {
+                    ForEach(filtered) { batch in
+                        batchRow(batch)
+                    }
+                }
+                .padding(.horizontal, Spacing.l)
             }
         }
-        .padding(.horizontal, Spacing.l)
     }
 
     private func batchRow(_ batch: CompostBatch) -> some View {
