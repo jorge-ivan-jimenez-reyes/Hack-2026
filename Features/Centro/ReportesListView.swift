@@ -17,7 +17,7 @@ struct ReportesListView: View {
 
     var body: some View {
         ZStack {
-            Color.cream.ignoresSafeArea()
+            Color.centroSurface.ignoresSafeArea()
 
             ScrollView {
                 VStack(spacing: Spacing.l) {
@@ -240,7 +240,7 @@ struct ReportesListView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background {
                     RoundedRectangle(cornerRadius: Radius.m)
-                        .fill(Color.cream)
+                        .fill(Color.centroSurface)
                 }
 
             HStack(spacing: Spacing.s) {
@@ -255,7 +255,7 @@ struct ReportesListView: View {
             Spacer()
         }
         .padding(Spacing.l)
-        .background(Color.cream)
+        .background(Color.centroSurface)
     }
 
     private func actionButton(label: String, icon: String, color: Color, action: @escaping () -> Void) -> some View {

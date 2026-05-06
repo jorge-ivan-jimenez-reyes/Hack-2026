@@ -27,7 +27,7 @@ struct CentroSetupView: View {
 
     var body: some View {
         ZStack {
-            Color.cream.ignoresSafeArea()
+            Color.centroSurface.ignoresSafeArea()
 
             VStack(spacing: 0) {
                 topBar

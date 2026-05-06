@@ -13,7 +13,7 @@ struct BatchDetailView: View {
 
     var body: some View {
         ZStack {
-            Color.cream.ignoresSafeArea()
+            Color.centroSurface.ignoresSafeArea()
 
             ScrollView {
                 VStack(spacing: Spacing.l) {

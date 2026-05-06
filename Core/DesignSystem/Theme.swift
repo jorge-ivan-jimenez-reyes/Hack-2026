@@ -28,6 +28,11 @@ extension Color {
     static let limeSpark   = Color("limeSpark")
     static let inkCharcoal = Color("inkCharcoal")
 
+    /// Fondo del rol Centro — mint sage claro. Light pero con tinte verde
+    /// fresco que se distingue del `cream` warm del recolector. Vibra
+    /// "laboratorio botánico". Combina con `forestDeep` + `clay` + `warning`.
+    static let centroSurface = Color(red: 0.840, green: 0.910, blue: 0.830)
+
     // Waste categories
     static let wasteOrganic    = Color("wasteOrganic")
     static let wastePET        = Color("wastePET")
@@ -56,6 +61,7 @@ extension ShapeStyle where Self == Color {
     static var moss: Color             { .moss }
     static var clay: Color             { .clay }
     static var cream: Color            { .cream }
+    static var centroSurface: Color    { .centroSurface }
     static var limeSpark: Color        { .limeSpark }
     static var inkCharcoal: Color      { .inkCharcoal }
     static var success: Color          { .success }

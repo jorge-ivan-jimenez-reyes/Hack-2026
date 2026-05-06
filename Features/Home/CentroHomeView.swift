@@ -4,6 +4,9 @@ import SwiftUI
 /// papel con stats del día, lista de quién toca abono, ruta del día y reportes.
 /// En prod estos datos vendrán de SwiftData / backend; aquí están hardcoded
 /// para demo.
+///
+/// Fondo `centroSurface` (mint sage) + acentos `forestDeep`/`clay`/`warning`
+/// para diferenciar visualmente del recolector (cream + brand).
 struct CentroHomeView: View {
     @AppStorage("centro.name") private var centroName = "Centro Roma Norte"
 
@@ -24,7 +27,7 @@ struct CentroHomeView: View {
                 }
                 .padding(.vertical, Spacing.s)
             }
-            .background(Color.cream)
+            .background(Color.centroSurface)
             .scrollIndicators(.hidden)
 
             scanFAB
@@ -75,13 +78,13 @@ struct CentroHomeView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .background {
                 LinearGradient(
-                    colors: [.brand, .moss, .clay],
+                    colors: [.forestDeep, .clay, .warning],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 )
             }
             .clipShape(RoundedRectangle(cornerRadius: Radius.l))
-            .shadow(color: Color.brand.opacity(0.30), radius: 18, y: 6)
+            .shadow(color: Color.forestDeep.opacity(0.30), radius: 18, y: 6)
         }
         .buttonStyle(.plain)
         .padding(.horizontal, Spacing.l)
@@ -116,7 +119,7 @@ struct CentroHomeView: View {
             Spacer()
             Image(systemName: "leaf.circle.fill")
                 .font(.system(size: 32))
-                .foregroundStyle(.brand)
+                .foregroundStyle(.forestDeep)
         }
         .padding(.horizontal, Spacing.l)
         .padding(.top, Spacing.s)
@@ -140,7 +143,7 @@ struct CentroHomeView: View {
                     unit: "cubetas",
                     detail: "ingresadas hoy",
                     icon: "circle.grid.3x3.fill",
-                    tint: .brand
+                    tint: .forestDeep
                 )
                 statBlock(
                     value: "312",
@@ -154,7 +157,7 @@ struct CentroHomeView: View {
                     unit: "recolectores",
                     detail: "activos hoy",
                     icon: "person.3.fill",
-                    tint: .moss
+                    tint: .warning
                 )
             }
         }
@@ -198,7 +201,7 @@ struct CentroHomeView: View {
             HStack {
                 HStack(spacing: 6) {
                     Image(systemName: "sparkles")
-                        .foregroundStyle(.brand)
+                        .foregroundStyle(.forestDeep)
                         .symbolEffect(.variableColor.iterative.reversing, options: .repeat(.continuous))
                     Text("Toca dar abono")
                         .font(.appHeadline.weight(.semibold))
@@ -207,10 +210,10 @@ struct CentroHomeView: View {
                 Spacer()
                 Text("3 listos")
                     .font(.appCaption.weight(.semibold))
-                    .foregroundStyle(.brand)
+                    .foregroundStyle(.forestDeep)
                     .padding(.horizontal, Spacing.s)
                     .padding(.vertical, 4)
-                    .background(.brand.opacity(0.15), in: .capsule)
+                    .background(.forestDeep.opacity(0.15), in: .capsule)
             }
 
             VStack(spacing: 8) {
@@ -241,10 +244,10 @@ struct CentroHomeView: View {
             if ready {
                 Text("✨ Dar abono")
                     .font(.appCaption.weight(.semibold))
-                    .foregroundStyle(.brand)
+                    .foregroundStyle(.forestDeep)
                     .padding(.horizontal, Spacing.s)
                     .padding(.vertical, 4)
-                    .background(.brand.opacity(0.15), in: .capsule)
+                    .background(.forestDeep.opacity(0.15), in: .capsule)
             }
         }
         .padding(.vertical, 4)
@@ -277,12 +280,12 @@ struct CentroHomeView: View {
             }
 
             ProgressView(value: 14.0 / 23.0)
-                .tint(.brand)
+                .tint(.forestDeep)
 
             HStack(spacing: 6) {
                 Image(systemName: "clock.fill")
                     .font(.caption2)
-                    .foregroundStyle(.brand)
+                    .foregroundStyle(.forestDeep)
                 Text("Próxima llegada: Carlos M. · 8:30 am · 12 cubetas")
                     .font(.appCaption)
                     .foregroundStyle(.inkCharcoal.opacity(0.65))
@@ -364,10 +367,10 @@ struct CentroHomeView: View {
             .padding(.horizontal, Spacing.l)
             .padding(.vertical, Spacing.m)
             .glassEffect(
-                .regular.tint(Color.brand.opacity(0.92)).interactive(),
+                .regular.tint(Color.forestDeep.opacity(0.92)).interactive(),
                 in: .capsule
             )
-            .shadow(color: Color.brand.opacity(0.30), radius: 16, y: 6)
+            .shadow(color: Color.forestDeep.opacity(0.30), radius: 16, y: 6)
         }
         .accessibilityLabel("Registrar entrada de cubeta vía QR")
     }

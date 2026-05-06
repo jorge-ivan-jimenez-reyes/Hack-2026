@@ -113,7 +113,7 @@ struct CentroTabView: View {
             }
         }
         .tabBarMinimizeBehavior(.onScrollDown)
-        .tint(.brand)
+        .tint(.forestDeep)
     }
 }
 
