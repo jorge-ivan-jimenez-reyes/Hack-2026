@@ -88,6 +88,7 @@
 		A569F09361B60A4ADDF2B159 /* WrappedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FA4EAFED57D6DC106A73409 /* WrappedData.swift */; };
 		A58DB54A7B6B8DB18789D0F8 /* CubetaTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9226AE1DF0D85ECF504800B /* CubetaTracker.swift */; };
 		A88A30FE5503FCDD65F754D9 /* recycle-loop.json in Resources */ = {isa = PBXBuildFile; fileRef = 4BB7B1ADC565EF5C326CC50D /* recycle-loop.json */; };
+		7F2A9C1E8B4D5019A3B2C1D0E /* loading-leaf.json in Resources */ = {isa = PBXBuildFile; fileRef = 6E1B8D3C7A2F40918293E5F41 /* loading-leaf.json */; };
 		A8D4BEE324999CC1E4DB3B87 /* ProfileSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A95E6AFF910E6A8F7C423F0C /* ProfileSelectionView.swift */; };
 		AA02DE44A1FADED047FA0461 /* PickupActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95204D403CDC1BEA8B37B932 /* PickupActivityAttributes.swift */; };
 		B2CFDD5B1921AF5571F33D50 /* RecolectorState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9355253958F455AEC1AA8D6 /* RecolectorState.swift */; };
@@ -188,6 +189,7 @@
 		4709474B459E920A6CE58811 /* quiz-correct.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "quiz-correct.json"; sourceTree = "<group>"; };
 		4A8C1C865718996BDA0AFE9A /* RecyclingGuideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecyclingGuideView.swift; sourceTree = "<group>"; };
 		4BB7B1ADC565EF5C326CC50D /* recycle-loop.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "recycle-loop.json"; sourceTree = "<group>"; };
+		6E1B8D3C7A2F40918293E5F41 /* loading-leaf.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "loading-leaf.json"; sourceTree = "<group>"; };
 		4C06C17A969AF7EED81FEFBC /* AccessibilityModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityModifiers.swift; sourceTree = "<group>"; };
 		4DEECA49939573B81D79CA4A /* HackNacional2026App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HackNacional2026App.swift; sourceTree = "<group>"; };
 		539579FF5B70758C51506E6D /* Classification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Classification.swift; sourceTree = "<group>"; };
@@ -304,6 +306,7 @@
 				1B49E91735BC58A67D20D329 /* guide-inorganic.json */,
 				AF821AB1F48824C837643038 /* guide-organic.json */,
 				580EB97AAED8A8B06A2B8933 /* guide-sanitary.json */,
+				6E1B8D3C7A2F40918293E5F41 /* loading-leaf.json */,
 				4709474B459E920A6CE58811 /* quiz-correct.json */,
 				566D8AAB341C5D883AE968D5 /* quiz-trophy.json */,
 				621431831D77A090FE334FEE /* quiz-wrong.json */,
@@ -864,6 +867,7 @@
 				5D5D83D3B0E1D78503E8A741 /* quiz-trophy.json in Resources */,
 				876505032B726A55DCC55E45 /* quiz-wrong.json in Resources */,
 				A88A30FE5503FCDD65F754D9 /* recycle-loop.json in Resources */,
+				7F2A9C1E8B4D5019A3B2C1D0E /* loading-leaf.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

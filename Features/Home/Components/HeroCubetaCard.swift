@@ -44,20 +44,83 @@ struct HeroCubetaCard: View {
     }
 
     // MARK: - Backdrop
+    //
+    // Base en gradiente + brillo animado solo con formas **radiales** difuminadas
+    // (sin LinearGradient rotado ni .screen sobre rectángulos — eso marcaba “cuadrados”).
+    // TimelineView ~10 fps, acotado al tamaño real de la card.
 
     private var backdrop: some View {
-        ZStack {
-            LinearGradient(
-                colors: [Color.brand, Color.brand.opacity(0.75)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            Circle()
-                .fill(.white.opacity(0.12))
-                .blur(radius: 30)
-                .frame(width: 280, height: 280)
-                .offset(x: 110, y: -70)
+        GeometryReader { geo in
+            let w = geo.size.width
+            let h = geo.size.height
+            ZStack {
+                LinearGradient(
+                    stops: [
+                        .init(color: .forestDeep, location: 0),
+                        .init(color: .brand, location: 0.38),
+                        .init(color: .moss, location: 0.78),
+                        .init(color: .forestDeep.opacity(0.92), location: 1)
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                TimelineView(.animation(minimumInterval: 0.1, paused: false)) { context in
+                    let t = context.date.timeIntervalSince1970
+                    let driftX = CGFloat(sin(t * 0.42)) * (w * 0.07)
+                    let driftY = CGFloat(cos(t * 0.35)) * (h * 0.06)
+                    let drift2 = CGFloat(sin(t * 0.31 + 1.2)) * (w * 0.05)
+
+                    ZStack {
+                        softGlowBlob(
+                            colors: [.white.opacity(0.22), .white.opacity(0.06), .clear],
+                            size: max(w, h) * 0.95,
+                            blur: 38,
+                            x: w * 0.78 + driftX,
+                            y: h * 0.22 + driftY
+                        )
+                        softGlowBlob(
+                            colors: [.limeSpark.opacity(0.28), .limeSpark.opacity(0.08), .clear],
+                            size: max(w, h) * 0.75,
+                            blur: 44,
+                            x: w * 0.18 - driftX * 0.6,
+                            y: h * 0.72 - driftY
+                        )
+                        softGlowBlob(
+                            colors: [.brand.opacity(0.35), .clear],
+                            size: max(w, h) * 0.55,
+                            blur: 32,
+                            x: w * 0.52 + drift2,
+                            y: h * 0.48 + driftY * 0.4
+                        )
+                    }
+                    .frame(width: w, height: h)
+                    .compositingGroup()
+                    .blendMode(.plusLighter)
+                    .opacity(0.85)
+                }
+            }
         }
+    }
+
+    private func softGlowBlob(
+        colors: [Color],
+        size: CGFloat,
+        blur: CGFloat,
+        x: CGFloat,
+        y: CGFloat
+    ) -> some View {
+        Circle()
+            .fill(
+                RadialGradient(
+                    colors: colors,
+                    center: .center,
+                    startRadius: 0,
+                    endRadius: size * 0.52
+                )
+            )
+            .frame(width: size, height: size)
+            .blur(radius: blur)
+            .position(x: x, y: y)
     }
 
     // MARK: - States
@@ -80,11 +143,9 @@ struct HeroCubetaCard: View {
                     }
                 }
                 Spacer()
-                Image(systemName: "leaf.fill")
-                    .font(.system(size: 64, weight: .regular))
-                    .foregroundStyle(.white.opacity(0.6))
-                    .rotationEffect(.degrees(-15))
-                    .symbolEffect(.pulse, options: .repeat(.continuous))
+                LottiePlayer(name: "loading-leaf", fallbackSymbol: "leaf.fill")
+                    .frame(width: 92, height: 92)
+                    .shadow(color: .black.opacity(0.18), radius: 6, y: 3)
             }
 
             ProgressView(value: state.currentBucketProgress)
