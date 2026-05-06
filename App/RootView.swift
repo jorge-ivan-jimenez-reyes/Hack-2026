@@ -95,12 +95,18 @@ struct RecolectorTabView: View {
     }
 }
 
-/// Tab bar del Centro de acopio — Dashboard, Recolectores, Lotes, Reportes.
+/// Tab bar del Centro de acopio — Dashboard, Insights, Recolectores, Lotes, Reportes.
+/// **Insights** es el diferenciador del rol Centro: inteligencia operacional
+/// (tendencias, heatmap, predicciones, alertas auto-generadas) que la libreta
+/// de papel jamás daría.
 struct CentroTabView: View {
     var body: some View {
         TabView {
             Tab("Dashboard", systemImage: "square.grid.2x2.fill") {
                 CentroHomeView()
+            }
+            Tab("Insights", systemImage: "chart.line.uptrend.xyaxis") {
+                CentroInsightsView()
             }
             Tab("Recolectores", systemImage: "person.3.fill") {
                 RecolectoresListView()

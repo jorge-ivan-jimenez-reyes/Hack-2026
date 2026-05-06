@@ -196,30 +196,54 @@ struct CentroHomeView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
+    /// Datos mock de los usuarios y su progreso de cubetas (X / 15).
+    /// En prod vendrán de SwiftData/backend filtrados por centro asignado.
+    private let usuariosCubetas: [(name: String, progress: Int)] = [
+        ("Jorge J.",    15),
+        ("Ana M.",      14),
+        ("Carlos R.",   12),
+        ("Lucía P.",    11),
+        ("Diego H.",     9),
+        ("Sofía V.",     7),
+        ("Mateo G.",     4),
+        ("Paula T.",     2),
+    ]
+
+    private var totalCubetasUsuarios: Int { usuariosCubetas.reduce(0) { $0 + $1.progress } }
+    private var promedioPct: Int {
+        guard !usuariosCubetas.isEmpty else { return 0 }
+        let sumPct = usuariosCubetas.reduce(0.0) { $0 + Double($1.progress) / 15.0 }
+        return Int((sumPct / Double(usuariosCubetas.count)) * 100)
+    }
+    private var listosCount: Int { usuariosCubetas.filter { $0.progress >= 15 }.count }
+
     private var abonoQueueCard: some View {
-        VStack(alignment: .leading, spacing: Spacing.m) {
+        VStack(alignment: .leading, spacing: Spacing.l) {
+            // Header
             HStack {
                 HStack(spacing: 6) {
-                    Image(systemName: "sparkles")
+                    Image(systemName: "chart.bar.xaxis")
                         .foregroundStyle(.forestDeep)
-                        .symbolEffect(.variableColor.iterative.reversing, options: .repeat(.continuous))
-                    Text("Toca dar abono")
+                    Text("Progreso de cubetas")
                         .font(.appHeadline.weight(.semibold))
                         .foregroundStyle(.inkCharcoal)
                 }
                 Spacer()
-                Text("3 listos")
-                    .font(.appCaption.weight(.semibold))
-                    .foregroundStyle(.forestDeep)
-                    .padding(.horizontal, Spacing.s)
-                    .padding(.vertical, 4)
-                    .background(.forestDeep.opacity(0.15), in: .capsule)
+                Text("\(usuariosCubetas.count) usuarios")
+                    .font(.appCaption)
+                    .foregroundStyle(.inkCharcoal.opacity(0.55))
             }
 
-            VStack(spacing: 8) {
-                abonoQueueRow(name: "Jorge J.", progress: 15, total: 15, ready: true)
-                abonoQueueRow(name: "Ana M.", progress: 14, total: 15, ready: false)
-                abonoQueueRow(name: "Carlos R.", progress: 12, total: 15, ready: false)
+            // HERO: ring con promedio + mini stats al lado
+            heroSection
+
+            Divider()
+
+            // Lista de usuarios — cada fila ES la barra de progreso
+            VStack(spacing: Spacing.s) {
+                ForEach(Array(usuariosCubetas.enumerated()), id: \.offset) { _, u in
+                    abonoQueueRow(name: u.name, progress: u.progress, total: 15)
+                }
             }
         }
         .padding(Spacing.l)
@@ -232,25 +256,168 @@ struct CentroHomeView: View {
         .padding(.horizontal, Spacing.l)
     }
 
-    private func abonoQueueRow(name: String, progress: Int, total: Int, ready: Bool) -> some View {
-        HStack {
-            Text(name)
-                .font(.appBody)
-                .foregroundStyle(.inkCharcoal)
-            Spacer()
-            Text("\(progress)/\(total)")
-                .font(.appCaption.weight(.semibold))
-                .foregroundStyle(.inkCharcoal.opacity(0.55))
-            if ready {
-                Text("✨ Dar abono")
-                    .font(.appCaption.weight(.semibold))
-                    .foregroundStyle(.forestDeep)
-                    .padding(.horizontal, Spacing.s)
-                    .padding(.vertical, 4)
-                    .background(.forestDeep.opacity(0.15), in: .capsule)
+    /// Sección hero: ring circular con avg % + dos mini stats a la derecha.
+    private var heroSection: some View {
+        HStack(spacing: Spacing.l) {
+            // Ring de promedio
+            ZStack {
+                Circle()
+                    .stroke(Color.forestDeep.opacity(0.12), lineWidth: 8)
+                Circle()
+                    .trim(from: 0, to: Double(promedioPct) / 100)
+                    .stroke(
+                        LinearGradient(
+                            colors: [.forestDeep, .brand, .warning],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        ),
+                        style: StrokeStyle(lineWidth: 8, lineCap: .round)
+                    )
+                    .rotationEffect(.degrees(-90))
+                VStack(spacing: 0) {
+                    Text("\(promedioPct)%")
+                        .font(.system(size: 22, weight: .bold, design: .rounded))
+                        .foregroundStyle(.inkCharcoal)
+                        .contentTransition(.numericText())
+                    Text("avg")
+                        .font(.system(.caption2))
+                        .foregroundStyle(.inkCharcoal.opacity(0.55))
+                }
+            }
+            .frame(width: 88, height: 88)
+
+            // Mini stats verticales
+            VStack(alignment: .leading, spacing: Spacing.s) {
+                heroMiniStat(
+                    icon: "checkmark.seal.fill",
+                    value: "\(listosCount)",
+                    label: "listos para abono",
+                    tint: .brand
+                )
+                heroMiniStat(
+                    icon: "circle.grid.3x3.fill",
+                    value: "\(totalCubetasUsuarios)",
+                    label: "cubetas en sistema",
+                    tint: .clay
+                )
+            }
+            Spacer(minLength: 0)
+        }
+    }
+
+    private func heroMiniStat(icon: String, value: String, label: String, tint: Color) -> some View {
+        HStack(spacing: Spacing.s) {
+            Image(systemName: icon)
+                .font(.callout)
+                .foregroundStyle(tint)
+                .frame(width: 28, height: 28)
+                .background(tint.opacity(0.15), in: .circle)
+            VStack(alignment: .leading, spacing: 0) {
+                Text(value)
+                    .font(.appHeadline.weight(.bold))
+                    .foregroundStyle(.inkCharcoal)
+                    .contentTransition(.numericText())
+                Text(label)
+                    .font(.appCaption)
+                    .foregroundStyle(.inkCharcoal.opacity(0.60))
             }
         }
-        .padding(.vertical, 4)
+    }
+
+    /// Fila de usuario al estilo Spotify Wrapped: la fila completa ES la barra
+    /// de progreso (con fill tintado), y encima va el avatar + nombre + %.
+    private func abonoQueueRow(name: String, progress: Int, total: Int) -> some View {
+        let ratio = Double(progress) / Double(total)
+        let pct = Int(ratio * 100)
+        let ready = progress >= total
+        let near = !ready && progress >= 13
+        let tint: Color = ready ? .brand : (near ? .forestDeep : (ratio >= 0.5 ? .clay : .warning))
+
+        return GeometryReader { geo in
+            ZStack(alignment: .leading) {
+                // Track
+                RoundedRectangle(cornerRadius: Radius.m)
+                    .fill(tint.opacity(0.10))
+
+                // Fill (gradient sutil)
+                RoundedRectangle(cornerRadius: Radius.m)
+                    .fill(
+                        LinearGradient(
+                            colors: [tint.opacity(0.30), tint.opacity(0.18)],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+                    .frame(width: max(geo.size.width * ratio, 44))
+
+                // Contenido encima
+                HStack(spacing: Spacing.s) {
+                    // Avatar con iniciales
+                    avatarCircle(name: name, tint: tint)
+
+                    // Nombre + estado
+                    VStack(alignment: .leading, spacing: 0) {
+                        Text(name)
+                            .font(.appBody.weight(.semibold))
+                            .foregroundStyle(.inkCharcoal)
+                        Text("\(progress) de \(total) cubetas")
+                            .font(.appCaption)
+                            .foregroundStyle(.inkCharcoal.opacity(0.60))
+                    }
+
+                    Spacer(minLength: Spacing.s)
+
+                    // Badge de estado o pct
+                    if ready {
+                        statusPill(text: "✨ Dar abono", tint: .brand)
+                    } else if near {
+                        statusPill(text: "🔥 Cerca", tint: .forestDeep)
+                    }
+
+                    Text("\(pct)%")
+                        .font(.appHeadline.weight(.bold))
+                        .foregroundStyle(tint)
+                        .monospacedDigit()
+                }
+                .padding(.horizontal, Spacing.s)
+            }
+        }
+        .frame(height: 56)
+    }
+
+    private func avatarCircle(name: String, tint: Color) -> some View {
+        let initials = name
+            .split(separator: " ")
+            .compactMap { $0.first }
+            .prefix(2)
+            .map(String.init)
+            .joined()
+
+        return ZStack {
+            Circle()
+                .fill(tint.opacity(0.85))
+            Text(initials)
+                .font(.appCaption.weight(.bold))
+                .foregroundStyle(.cream)
+        }
+        .frame(width: 36, height: 36)
+        .overlay {
+            Circle().stroke(Color.white, lineWidth: 2)
+        }
+    }
+
+    private func statusPill(text: String, tint: Color) -> some View {
+        Text(text)
+            .font(.system(.caption2, weight: .semibold))
+            .foregroundStyle(tint)
+            .padding(.horizontal, Spacing.s)
+            .padding(.vertical, 3)
+            .background {
+                Capsule().fill(.white)
+            }
+            .overlay {
+                Capsule().stroke(tint.opacity(0.30), lineWidth: 1)
+            }
     }
 
     private var rutaCard: some View {
