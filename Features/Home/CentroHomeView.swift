@@ -124,14 +124,38 @@ struct CentroHomeView: View {
 
     private var statsCard: some View {
         VStack(alignment: .leading, spacing: Spacing.m) {
-            Text("Hoy")
-                .font(.appHeadline.weight(.semibold))
-                .foregroundStyle(.inkCharcoal)
+            HStack(alignment: .firstTextBaseline) {
+                Text("Recibido hoy")
+                    .font(.appHeadline.weight(.semibold))
+                    .foregroundStyle(.inkCharcoal)
+                Spacer()
+                Text("Lun · 5 may")
+                    .font(.appCaption)
+                    .foregroundStyle(.inkCharcoal.opacity(0.55))
+            }
 
             HStack(spacing: Spacing.l) {
-                statBlock(value: "47", unit: "cubetas", icon: "circle.grid.3x3.fill", tint: .brand)
-                statBlock(value: "312", unit: "kg", icon: "scalemass.fill", tint: .clay)
-                statBlock(value: "8", unit: "recolectores", icon: "person.3.fill", tint: .moss)
+                statBlock(
+                    value: "47",
+                    unit: "cubetas",
+                    detail: "ingresadas hoy",
+                    icon: "circle.grid.3x3.fill",
+                    tint: .brand
+                )
+                statBlock(
+                    value: "312",
+                    unit: "kg orgánico",
+                    detail: "≈ 6.6 kg/cubeta",
+                    icon: "scalemass.fill",
+                    tint: .clay
+                )
+                statBlock(
+                    value: "8",
+                    unit: "recolectores",
+                    detail: "activos hoy",
+                    icon: "person.3.fill",
+                    tint: .moss
+                )
             }
         }
         .padding(Spacing.l)
@@ -144,7 +168,7 @@ struct CentroHomeView: View {
         .padding(.horizontal, Spacing.l)
     }
 
-    private func statBlock(value: String, unit: String, icon: String, tint: Color) -> some View {
+    private func statBlock(value: String, unit: String, detail: String, icon: String, tint: Color) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Image(systemName: icon)
                 .font(.callout)
@@ -156,8 +180,15 @@ struct CentroHomeView: View {
                 .foregroundStyle(.inkCharcoal)
                 .contentTransition(.numericText())
             Text(unit)
+                .font(.appCaption.weight(.medium))
+                .foregroundStyle(.inkCharcoal.opacity(0.75))
+                .lineLimit(1)
+                .minimumScaleFactor(0.85)
+            Text(detail)
                 .font(.appCaption)
-                .foregroundStyle(.inkCharcoal.opacity(0.55))
+                .foregroundStyle(tint.opacity(0.85))
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -225,12 +256,12 @@ struct CentroHomeView: View {
                 HStack(spacing: 6) {
                     Image(systemName: "shippingbox.fill")
                         .foregroundStyle(.clay)
-                    Text("Ruta de hoy")
+                    Text("Entregas de hoy")
                         .font(.appHeadline.weight(.semibold))
                         .foregroundStyle(.inkCharcoal)
                 }
                 Spacer()
-                Text("60%")
+                Text("14 / 23")
                     .font(.appCaption.weight(.semibold))
                     .foregroundStyle(.inkCharcoal.opacity(0.55))
             }
@@ -240,17 +271,24 @@ struct CentroHomeView: View {
                     .font(.appBody)
                     .foregroundStyle(.inkCharcoal)
                 Spacer()
-                Text("23 paradas")
+                Text("9 recolectores en ruta")
                     .font(.appCaption)
                     .foregroundStyle(.inkCharcoal.opacity(0.55))
             }
 
-            ProgressView(value: 0.60)
+            ProgressView(value: 14.0 / 23.0)
                 .tint(.brand)
 
-            Text("Próxima parada: Calle Tabasco 124 — 8:30 am")
-                .font(.appCaption)
-                .foregroundStyle(.inkCharcoal.opacity(0.55))
+            HStack(spacing: 6) {
+                Image(systemName: "clock.fill")
+                    .font(.caption2)
+                    .foregroundStyle(.brand)
+                Text("Próxima llegada: Carlos M. · 8:30 am · 12 cubetas")
+                    .font(.appCaption)
+                    .foregroundStyle(.inkCharcoal.opacity(0.65))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.85)
+            }
         }
         .padding(Spacing.l)
         .frame(maxWidth: .infinity, alignment: .leading)

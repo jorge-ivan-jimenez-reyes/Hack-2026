@@ -1,7 +1,12 @@
 import SwiftUI
 
 struct CoachView: View {
+    /// Pregunta semilla — si está, se manda automáticamente al abrir el chat.
+    /// Lo usa el Home para saltar al coach con contexto del progreso actual.
+    var starterPrompt: String? = nil
+
     @State private var state = CoachState()
+    @State private var didFireStarter = false
     @FocusState private var inputFocused: Bool
 
     var body: some View {
@@ -31,6 +36,15 @@ struct CoachView: View {
                                 .foregroundStyle(.brand)
                         }
                     }
+                }
+            }
+            .task {
+                // Si llegamos con un prompt seed (desde el Home), lo mandamos
+                // una sola vez al aparecer. Así el coach arranca con contexto
+                // del estado de la cubeta — no en blanco.
+                if let starter = starterPrompt, !didFireStarter, state.entries.isEmpty {
+                    didFireStarter = true
+                    await state.send(starter)
                 }
             }
         }

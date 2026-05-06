@@ -16,6 +16,7 @@ struct ScheduleDeliverySheet: View {
     @State private var contactPhone: String = ""
     @State private var notes: String = ""
     @State private var didConfirm = false
+    @State private var isConfirming = false
 
     /// Lista mock de centros disponibles. En prod vendría de CenterLocation.
     private let centers: [String] = [
@@ -206,25 +207,21 @@ struct ScheduleDeliverySheet: View {
 
     private var confirmButton: some View {
         Button {
-            Haptics.success()
-            // Si es pickup, dispara la Live Activity para que aparezca en
-            // Lock Screen / Dynamic Island con ETA del camión.
-            if mode == .pickup {
-                let etaMinutes = max(5, Int(selectedDate.timeIntervalSinceNow / 60))
-                PickupLiveActivityController.start(
-                    centroName: selectedCenter,
-                    address: "Roma Norte, CDMX",
-                    initialEtaMinutes: etaMinutes
-                )
-            }
-            withAnimation(AppAnimation.spring) {
-                didConfirm = true
-            }
+            confirmAction()
         } label: {
             HStack(spacing: Spacing.s) {
-                Image(systemName: "checkmark.circle.fill")
-                Text("Confirmar")
+                if isConfirming {
+                    ProgressView()
+                        .controlSize(.small)
+                        .tint(.cream)
+                } else {
+                    Image(systemName: "checkmark.circle.fill")
+                        .transition(.scale.combined(with: .opacity))
+                }
+                // Texto morphea: "Confirmar" → "Programando..." → handover a confirmation view
+                Text(buttonLabel)
                     .font(.appHeadline.weight(.semibold))
+                    .contentTransition(.numericText())
             }
             .foregroundStyle(.cream)
             .frame(maxWidth: .infinity, minHeight: 52)
@@ -233,6 +230,39 @@ struct ScheduleDeliverySheet: View {
         }
         .buttonStyle(.plain)
         .padding(.horizontal, Spacing.l)
+        .disabled(isConfirming)
+    }
+
+    private var buttonLabel: String {
+        isConfirming ? "Programando…" : "Confirmar"
+    }
+
+    private func confirmAction() {
+        Haptics.tap()
+        withAnimation(AppAnimation.spring) {
+            isConfirming = true
+        }
+        // Si es pickup, dispara la Live Activity para que aparezca en
+        // Lock Screen / Dynamic Island con ETA del camión.
+        if mode == .pickup {
+            let etaMinutes = max(5, Int(selectedDate.timeIntervalSinceNow / 60))
+            PickupLiveActivityController.start(
+                centroName: selectedCenter,
+                address: "Roma Norte, CDMX",
+                initialEtaMinutes: etaMinutes
+            )
+        }
+        // Pequeño delay artificial para que el morph se vea — Family-style.
+        Task {
+            try? await Task.sleep(for: .milliseconds(550))
+            await MainActor.run {
+                Haptics.success()
+                withAnimation(AppAnimation.spring) {
+                    didConfirm = true
+                    isConfirming = false
+                }
+            }
+        }
     }
 
     // MARK: - Confirmation

@@ -11,14 +11,31 @@ struct HeroCubetaCard: View {
         ZStack {
             backdrop
 
-            switch state.stage {
-            case .filling, .waitingPickup, .justDelivered, .onboardingPending:
-                fillingState
-            case .bucketReady:
-                bucketReadyState
-            case .abonoReady:
-                abonoReadyState
+            // Family-style: cada stage se cross-fade + scale ligero al cambiar.
+            // Evita el hard-cut entre filling → bucketReady → abonoReady.
+            Group {
+                switch state.stage {
+                case .filling, .waitingPickup, .justDelivered, .onboardingPending:
+                    fillingState
+                        .transition(.asymmetric(
+                            insertion: .opacity.combined(with: .scale(scale: 0.96)),
+                            removal: .opacity.combined(with: .scale(scale: 1.04))
+                        ))
+                case .bucketReady:
+                    bucketReadyState
+                        .transition(.asymmetric(
+                            insertion: .scale(scale: 0.85).combined(with: .opacity),
+                            removal: .opacity
+                        ))
+                case .abonoReady:
+                    abonoReadyState
+                        .transition(.asymmetric(
+                            insertion: .scale(scale: 0.85).combined(with: .opacity),
+                            removal: .opacity
+                        ))
+                }
             }
+            .animation(.spring(duration: 0.55, bounce: 0.30), value: state.stage)
         }
         .frame(maxWidth: .infinity)
         .frame(minHeight: 240)
@@ -74,6 +91,7 @@ struct HeroCubetaCard: View {
                 .tint(.white)
                 .scaleEffect(y: 1.6)
                 .background(.white.opacity(0.18), in: .capsule)
+                .animation(.smooth(duration: 0.6), value: state.currentBucketProgress)
 
             modalityChip
         }

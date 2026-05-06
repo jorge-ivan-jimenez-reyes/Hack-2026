@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ScannerView: View {
     @State private var coordinator = ScannerCoordinator()
+    @State private var rippleTrigger = 0
 
     var body: some View {
         NavigationStack {
@@ -55,7 +56,10 @@ struct ScannerView: View {
     @ViewBuilder
     private var cameraLayer: some View {
         switch coordinator.camera.status {
-        case .running:
+        case .running, .paused:
+            // Paused = la session está pausada pero el layer sigue attachado.
+            // Mostramos el preview siempre que esté configurado para evitar
+            // el flicker al re-entrar al sheet.
             CameraPreview(session: coordinator.camera.session)
         case .denied:
             permissionDeniedView
@@ -109,9 +113,16 @@ struct ScannerView: View {
     private var captureButton: some View {
         Button {
             Haptics.confirm()
+            rippleTrigger += 1
             Task { await coordinator.captureAndClassify() }
         } label: {
             ZStack {
+                // Ripple — 3 anillos concéntricos que se expanden y desvanecen
+                // al tap. Patrón Family-style: feedback espacial que conecta
+                // la acción con el efecto.
+                CaptureRipple(trigger: rippleTrigger)
+                    .allowsHitTesting(false)
+
                 Circle()
                     .stroke(.white, lineWidth: 4)
                     .frame(width: 84, height: 84)

@@ -133,15 +133,39 @@ enum HomeInfoCatalog {
         ]
     )
 
-    static let impacto = InfoSheet(
-        title: "Tu impacto",
-        symbol: "leaf.fill",
-        tint: .moss,
-        body: "Mide qué tanto desviaste del relleno sanitario. Cada kg orgánico que NO va a relleno evita ~1.9 kg de CO₂ (porque no se descompone con metano).",
+    static let impactoKg = InfoSheet(
+        title: "Kg desviados",
+        symbol: "scalemass.fill",
+        tint: .brand,
+        body: "Es la suma de todo lo orgánico que separaste y NO terminó en el relleno sanitario. Cada kg cuenta — la basura orgánica es ~50% de lo que se tira en CDMX.",
         extraLines: [
-            "kg desviados: lo que entregaste en cubetas",
-            "kg CO₂ evitado: tu contribución directa al clima",
-            "Días seguidos: tu racha actual sin romper el flujo"
+            "Se mide cuando entregas la cubeta al centro",
+            "Una cubeta promedio pesa ~5 kg",
+            "1 bolsa de mercado ≈ 1.2 kg orgánico"
+        ]
+    )
+
+    static let impactoCO2 = InfoSheet(
+        title: "CO₂ evitado",
+        symbol: "leaf.fill",
+        tint: .success,
+        body: "Cuando lo orgánico se pudre en el relleno produce metano (28× peor que CO₂). Compostarlo evita esa emisión. Cada kg orgánico desviado ≈ 1.9 kg CO₂eq evitado.",
+        extraLines: [
+            "1 árbol captura ~22 kg CO₂ al año",
+            "Equivalente en focos LED encendidos un día",
+            "Factor de conversión: SEDEMA CDMX 2024"
+        ]
+    )
+
+    static let impactoRacha = InfoSheet(
+        title: "Tu racha",
+        symbol: "flame.fill",
+        tint: .orange,
+        body: "Días consecutivos en los que separaste algo. La constancia importa más que el volumen — un poco diario hace más impacto que mucho una vez al mes.",
+        extraLines: [
+            "Sigue tu racha activa en el Home",
+            "Próximas metas: 7, 14, 30, 60, 100 días",
+            "Si fallas un día, la racha empieza de nuevo"
         ]
     )
 

@@ -77,11 +77,11 @@ struct RecolectorTabView: View {
             Tab("Inicio", systemImage: "house.fill") {
                 HomeView()
             }
-            Tab("Escanear", systemImage: "camera.viewfinder") {
-                ScannerView()
-            }
             Tab("Guía", systemImage: "book.closed.fill") {
                 RecyclingGuideView()
+            }
+            Tab("Escanear", systemImage: "camera.viewfinder") {
+                ScannerView()
             }
             Tab("Historial", systemImage: "clock") {
                 HistoryView()

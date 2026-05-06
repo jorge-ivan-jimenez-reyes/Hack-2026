@@ -8,6 +8,7 @@ final class CameraService: NSObject {
         case idle
         case configuring
         case running
+        case paused
         case denied
         case failed(String)
     }
@@ -20,19 +21,43 @@ final class CameraService: NSObject {
     private let sessionQueue = DispatchQueue(label: "mx.up.hacknacional.camera.session")
     private var captureContinuation: CheckedContinuation<UIImage, Error>?
 
+    /// Marca si ya se hizo el `addInput`/`addOutput` al menos una vez.
+    /// Sin esto, re-entrar al ScannerView (cerrar y abrir el sheet) llama
+    /// `configureSession` otra vez y `canAddInput` regresa false → la
+    /// cámara queda "trabada" en "Iniciando cámara…".
+    private var didConfigure = false
+
     func start() async {
+        // Idempotente: si ya está corriendo o configurando, no hacer nada.
+        switch status {
+        case .running, .configuring:
+            return
+        case .denied, .failed:
+            // permite reintento
+            break
+        default:
+            break
+        }
+
         status = .configuring
         guard await requestAuthorization() else {
             status = .denied
             return
         }
-        await configureSession()
+        if didConfigure {
+            await resumeSession()
+        } else {
+            await configureSession()
+        }
     }
 
     func stop() {
+        // Pausa la session pero deja la configuración intacta para que
+        // el siguiente start sea instantáneo.
         sessionQueue.async { [session] in
             if session.isRunning { session.stopRunning() }
         }
+        if status == .running { status = .paused }
     }
 
     func capture() async throws -> UIImage {
@@ -74,7 +99,23 @@ final class CameraService: NSObject {
                 continuation.resume(returning: session.isRunning)
             }
         }
-        status = started ? .running : .failed("No se pudo iniciar la cámara")
+        if started {
+            didConfigure = true
+            status = .running
+        } else {
+            status = .failed("No se pudo iniciar la cámara")
+        }
+    }
+
+    /// Reanuda una session ya configurada — barata, no agrega inputs/outputs.
+    private func resumeSession() async {
+        let started = await withCheckedContinuation { (cont: CheckedContinuation<Bool, Never>) in
+            sessionQueue.async { [session] in
+                if !session.isRunning { session.startRunning() }
+                cont.resume(returning: session.isRunning)
+            }
+        }
+        status = started ? .running : .failed("No se pudo reanudar la cámara")
     }
 }
 

@@ -179,5 +179,10 @@ struct ResultView: View {
         )
         context.insert(record)
         try? context.save()
+
+        // Avanza la cubeta del recolector (orgánico la llena, lo demás solo
+        // suma a kg desviados). El Home se actualiza automáticamente por
+        // los @AppStorage compartidos.
+        RecolectorProgress.recordScan(category: classification.category)
     }
 }

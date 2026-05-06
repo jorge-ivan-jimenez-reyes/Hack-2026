@@ -31,6 +31,9 @@ struct SettingsView: View {
                         householdSection
                         dataSection
                         aboutSection
+                        #if DEBUG
+                        demoSection
+                        #endif
                         resetSection
                         Color.clear.frame(height: 40)
                     }
@@ -204,6 +207,40 @@ struct SettingsView: View {
             }
         }
     }
+
+    #if DEBUG
+    /// Shortcuts solo en builds DEBUG para forzar estados durante demo/pitch.
+    /// No aparecen en release.
+    private var demoSection: some View {
+        sectionCard(title: "Demo (solo DEBUG)") {
+            VStack(spacing: Spacing.s) {
+                Button {
+                    Haptics.tap()
+                    RecolectorProgress.loadDemoState()
+                    dismiss()
+                } label: {
+                    infoRow(icon: "wand.and.stars", tint: .brand, label: "Cargar estado avanzado (7 cubetas)")
+                }
+                Divider().padding(.leading, 36)
+                Button {
+                    Haptics.tap()
+                    RecolectorProgress.loadAlmostAbonoState()
+                    dismiss()
+                } label: {
+                    infoRow(icon: "leaf.circle.fill", tint: .moss, label: "Casi abono (14/15)")
+                }
+                Divider().padding(.leading, 36)
+                Button {
+                    Haptics.warning()
+                    RecolectorProgress.resetCycle()
+                    dismiss()
+                } label: {
+                    infoRow(icon: "arrow.counterclockwise", tint: .clay, label: "Reset progreso de cubeta")
+                }
+            }
+        }
+    }
+    #endif
 
     private var resetSection: some View {
         Button {

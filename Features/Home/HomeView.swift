@@ -6,28 +6,95 @@ import SwiftUI
 ///
 /// **Cada card es tappable** — abre un InfoSheet explicando qué significa.
 struct HomeView: View {
-    /// Inicia en `.empty` — usuario nuevo recién acabó setup, todo en cero.
-    /// Cambiar a `.mock` para demo con datos cargados.
+    /// Estado base — name, alcaldía, modalidad. El progreso real
+    /// (cubeta, completed, kg) viene de `@AppStorage` para que el Scanner
+    /// pueda actualizarlo y el Home reaccione automáticamente.
     @State private var state: RecolectorState = .empty
     @State private var showScanner = false
     @State private var showCenterMap = false
     @State private var showSettings = false
     @State private var showWrapped = false
     @State private var showSchedule = false
+    @State private var showAbono = false
+    @State private var fillBurstTrigger = 0
+    @State private var fallingLeafTrigger = 0
+    @State private var coachStarterPrompt: String?
 
     /// InfoSheet activo (uno a la vez). Nil = sin sheet.
     @State private var activeInfo: InfoKind?
 
     @AppStorage("recolector.serviceMode") private var serviceModeRaw = "drop_off"
 
+    // Progreso persistido — único source of truth, escrito por ResultView.save()
+    @AppStorage(RecolectorProgress.Keys.bucketProgress) private var storedBucketProgress: Double = 0
+    @AppStorage(RecolectorProgress.Keys.bucketsCompleted) private var storedBucketsCompleted: Int = 0
+    @AppStorage(RecolectorProgress.Keys.totalKg) private var storedTotalKg: Double = 0
+    @AppStorage(RecolectorProgress.Keys.streakDays) private var storedStreakDays: Int = 0
+
     private var resolvedState: RecolectorState {
         var s = state
         s.serviceMode = serviceModeRaw == "pickup" ? .pickup : .dropOff
+        s.currentBucketProgress = storedBucketProgress
+        s.bucketsCompleted = storedBucketsCompleted
+        s.totalKgDiverted = storedTotalKg
+        s.co2SavedKg = storedTotalKg * 1.9    // factor metano evitado
+        s.streakDays = max(s.streakDays, storedStreakDays)
+        s.stage = derivedStage()
+        s.coachTip = contextualTip.text
         return s
+    }
+
+    /// Tip contextual del Coach IA — derivado del progreso actual.
+    /// Cambia con la cubeta, la racha y el ciclo 15:1.
+    private var contextualTip: ContextualCoachTip {
+        CoachTipEngine.tip(
+            bucketProgress: storedBucketProgress,
+            bucketsCompleted: storedBucketsCompleted,
+            streakDays: max(state.streakDays, storedStreakDays)
+        )
+    }
+
+    /// Deriva el stage del usuario a partir del progreso persistido.
+    /// .abonoReady gana sobre todo: 15 cubetas → toca recibir abono.
+    private func derivedStage() -> RecolectorJourneyStage {
+        if storedBucketsCompleted >= RecolectorProgress.bucketsForAbono { return .abonoReady }
+        if storedBucketProgress >= 1.0 { return .bucketReady }
+        if storedBucketProgress > 0 || storedBucketsCompleted > 0 { return .filling }
+        return .onboardingPending
+    }
+
+    /// Kg de abono que recibe el usuario al cerrar el ciclo.
+    /// Aproximación: 1.5 kg por cubeta (15 cubetas ≈ 22.5 kg de composta).
+    private var kgAbonoForCycle: Double {
+        Double(RecolectorProgress.bucketsForAbono) * 1.5
+    }
+
+    /// El teaser del Wrapped solo aparece en los últimos 5 días del mes — fuera
+    /// de eso es ruido (Simplicity: revelar features cuando son relevantes).
+    private var shouldShowWrappedTeaser: Bool {
+        let cal = Calendar.current
+        let now = Date()
+        guard let range = cal.range(of: .day, in: .month, for: now),
+              let lastDay = range.last else { return false }
+        let day = cal.component(.day, from: now)
+        return day >= lastDay - 4
     }
 
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
+            // Particle burst overlay — se dispara al cruzar a bucketReady.
+            // Está arriba de todo lo demás pero `.allowsHitTesting(false)`
+            // adentro del ConfettiView lo hace transparente al toque.
+            ConfettiView(trigger: fillBurstTrigger, count: 36)
+                .ignoresSafeArea()
+                .zIndex(10)
+
+            // Hoja cayendo — visualiza el "token tumbling" cuando un scan
+            // hizo subir el progreso de la cubeta.
+            FallingLeafToken(trigger: fallingLeafTrigger)
+                .ignoresSafeArea()
+                .zIndex(9)
+
             ScrollView {
                 VStack(spacing: Spacing.l) {
                     HomeHeader(
@@ -37,7 +104,10 @@ struct HomeView: View {
                         onTapProfile: { showSettings = true }
                     )
 
-                    wrappedTeaser
+                    if shouldShowWrappedTeaser {
+                        wrappedTeaser
+                            .transition(.move(edge: .top).combined(with: .opacity))
+                    }
 
                     Button {
                         Haptics.tap()
@@ -61,21 +131,24 @@ struct HomeView: View {
                     }
                     .buttonStyle(.plain)
 
-                    Button {
-                        Haptics.tap()
-                        activeInfo = .impacto
-                    } label: {
-                        ImpactRow(
-                            totalKg: resolvedState.totalKgDiverted,
-                            co2Kg: resolvedState.co2SavedKg,
-                            streakDays: resolvedState.streakDays
-                        )
-                    }
-                    .buttonStyle(.plain)
+                    ImpactRow(
+                        totalKg: resolvedState.totalKgDiverted,
+                        co2Kg: resolvedState.co2SavedKg,
+                        streakDays: resolvedState.streakDays,
+                        onTap: { stat in
+                            switch stat {
+                            case .kg:    activeInfo = .impactoKg
+                            case .co2:   activeInfo = .impactoCO2
+                            case .racha: activeInfo = .impactoRacha
+                            }
+                        }
+                    )
 
                     CoachTipCard(tip: resolvedState.coachTip) {
                         Haptics.tap()
-                        activeInfo = .coach
+                        // Abre el chat con la pregunta seed del tip cargada,
+                        // así el coach arranca conversación con contexto real.
+                        coachStarterPrompt = contextualTip.prompt
                     }
 
                     CuadraCard(
@@ -110,12 +183,26 @@ struct HomeView: View {
         .fullScreenCover(isPresented: $showWrapped) {
             RecolectorWrappedView(data: .mock)
         }
+        .fullScreenCover(isPresented: $showAbono) {
+            AbonoReceivedView(kgAbono: kgAbonoForCycle)
+        }
+        .sheet(item: Binding(
+            get: { coachStarterPrompt.map { CoachStarter(prompt: $0) } },
+            set: { coachStarterPrompt = $0?.prompt }
+        )) { starter in
+            CoachView(starterPrompt: starter.prompt)
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
+        }
         .sheet(isPresented: $showSchedule) {
             ScheduleDeliverySheet(
                 mode: resolvedState.serviceMode,
                 nearestCenter: resolvedState.nearestCenter
             )
-            .presentationDetents([.large])
+            // Progressive disclosure: arranca en medium para que se vean
+            // las opciones esenciales; drag a large revela el form completo.
+            .presentationDetents([.medium, .large])
+            .presentationDragIndicator(.visible)
         }
         .sheet(item: $activeInfo) { kind in
             kind.sheet
@@ -123,11 +210,36 @@ struct HomeView: View {
                 .presentationDragIndicator(.visible)
         }
         .onAppear {
+            // Seed primera vez: mete valores creíbles para que el Home no se
+            // vea vacío al primer launch. Solo corre si nunca se sembró.
+            RecolectorProgress.seedIfNeeded()
             WidgetState.sync(
                 bucketProgress: resolvedState.currentBucketProgress,
                 bucketsCompleted: resolvedState.bucketsCompleted,
                 totalKgDiverted: resolvedState.totalKgDiverted
             )
+        }
+        // Family-style: burst de partículas cuando la cubeta cruza a 100%
+        // (filling → bucketReady). Es el momento que recompensa la racha
+        // de scans del usuario.
+        .onChange(of: resolvedState.stage) { oldStage, newStage in
+            if newStage == .bucketReady && oldStage != .bucketReady {
+                Haptics.success()
+                fillBurstTrigger += 1
+            }
+        }
+        // Token tumbling: cada vez que el progreso o el contador suben,
+        // animamos la hoja cayendo desde arriba al centro del Home.
+        // Visualiza la conexión "scan guardado → cubeta avanzó".
+        .onChange(of: storedBucketProgress) { oldValue, newValue in
+            if newValue > oldValue {
+                fallingLeafTrigger += 1
+            }
+        }
+        .onChange(of: storedBucketsCompleted) { oldValue, newValue in
+            if newValue > oldValue {
+                fallingLeafTrigger += 1
+            }
         }
     }
 
@@ -210,33 +322,43 @@ struct HomeView: View {
     }
 
     private func handleHeroAction() {
-        switch state.stage {
+        switch resolvedState.stage {
         case .bucketReady:
             showSchedule = true
         case .abonoReady:
-            // TODO día del hack: pantalla "recibir abono". Por ahora reusa schedule.
-            showSchedule = true
+            showAbono = true
         default:
             break
         }
     }
 }
 
+/// Wrapper Identifiable para presentar el Coach con un prompt seed.
+/// Necesario porque `.sheet(item:)` requiere Identifiable.
+struct CoachStarter: Identifiable, Hashable {
+    var id: String { prompt }
+    let prompt: String
+}
+
 /// Tipos de InfoSheet que se pueden mostrar en el Home.
 enum InfoKind: Identifiable {
     case cubeta
     case tracker
-    case impacto
+    case impactoKg
+    case impactoCO2
+    case impactoRacha
     case coach
     case cuadra
 
     var id: String {
         switch self {
-        case .cubeta: return "cubeta"
-        case .tracker: return "tracker"
-        case .impacto: return "impacto"
-        case .coach: return "coach"
-        case .cuadra: return "cuadra"
+        case .cubeta:        return "cubeta"
+        case .tracker:       return "tracker"
+        case .impactoKg:     return "impactoKg"
+        case .impactoCO2:    return "impactoCO2"
+        case .impactoRacha:  return "impactoRacha"
+        case .coach:         return "coach"
+        case .cuadra:        return "cuadra"
         }
     }
 
@@ -244,11 +366,13 @@ enum InfoKind: Identifiable {
     @ViewBuilder
     var sheet: some View {
         switch self {
-        case .cubeta:  HomeInfoCatalog.cubeta
-        case .tracker: HomeInfoCatalog.tracker
-        case .impacto: HomeInfoCatalog.impacto
-        case .coach:   HomeInfoCatalog.coach
-        case .cuadra:  HomeInfoCatalog.cuadra
+        case .cubeta:        HomeInfoCatalog.cubeta
+        case .tracker:       HomeInfoCatalog.tracker
+        case .impactoKg:     HomeInfoCatalog.impactoKg
+        case .impactoCO2:    HomeInfoCatalog.impactoCO2
+        case .impactoRacha:  HomeInfoCatalog.impactoRacha
+        case .coach:         HomeInfoCatalog.coach
+        case .cuadra:        HomeInfoCatalog.cuadra
         }
     }
 }
